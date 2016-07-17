@@ -1,7 +1,7 @@
 package servlets;
 
 import dao.interfaces.UserDao;
-import filter.DBInitializer;
+import service.DBInitializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
 import service.Validator;

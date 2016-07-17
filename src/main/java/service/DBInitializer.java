@@ -1,4 +1,4 @@
-package filter;
+package service;
 
 import dao.jdbc.JDBCUserDao;
 import org.apache.log4j.BasicConfigurator;
@@ -47,7 +47,6 @@ public class DBInitializer implements ServletContextListener {
         servletContext.setAttribute(USER_DAO, (JDBCUserDao) ds::getConnection);
 //        servletContext.setAttribute(GUN_DAO, (MySqlGunDao) ds::getConnection);
 //        servletContext.setAttribute(INSTANCE_DAO, (MySqlInstanceDao) ds::getConnection);
-
 
     }
 }
