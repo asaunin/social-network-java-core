@@ -1,63 +1,79 @@
 package servlets;
 
 import dao.interfaces.UserDao;
-import listeners.DbInitializer;
+import filter.DBInitializer;
+import lombok.extern.log4j.Log4j;
 import model.User;
-import org.apache.log4j.Logger;
 import service.Validator;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet(name = "login", urlPatterns = { "/Login" })
+@Log4j
+@WebServlet("/login")
 public class Login extends HttpServlet {
 
-    public static final String USER = "user";
-    static Logger logger = Logger.getLogger(Login.class);
+    // TODO: 06.07.2016 Подключить логгер
+    // TODO: 14.07.2016 Прописать пути в фильтр
+    // TODO: 11.07.2016 Реализовать logout
+    // TODO: 14.07.2016 Вместо forward лучше использовать sendRedirect
+    // TODO: 14.07.2016 Развертка приложения
+    // TODO: 14.07.2016 Тестирование под нагрузкой Curla
+
+    private UserDao userDao;
+
+    private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.error(errorMessage);
+        request.setAttribute("errorMessage", errorMessage);
+        request.getRequestDispatcher("/login.jsp").forward(request, response); // TODO: 14.07.2016 http://stackoverflow.com/questions/17001185/pass-hidden-parameters-using-response-sendredirect 
+    }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        userDao = (UserDao) config.getServletContext().getAttribute(DBInitializer.USER_DAO);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String errorMessage = "";
+        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final String email = request.getParameter("email");
+        final String password = request.getParameter("password");
 
-        if (email == null || email.equals("")) { // TODO: 29.06.2016 Как реализовать конструкцию через Лямбды 
-            errorMessage = "Email is empty";
-        } else
-        if (password == null || password.equals("")) {
-            errorMessage = "Password is empty";
-        } else
-        if (!Validator.isValidEmail(email))
-            errorMessage = "Email is not valid";
-
-        HttpSession session = request.getSession();
+        //Validate input parameters
+        String errorMessage = Validator.validateLogin(email, password, session.getLocale());
         if (!errorMessage.isEmpty()) {
-
-            logger.error(errorMessage);
-            String bsErrorMassage = "<div class=\"alert alert-danger\"><strong>" + errorMessage + "</strong></div>";
-            session.setAttribute("LoginError", bsErrorMassage);
-            response.sendRedirect(request.getHeader("Referer")); // TODO: 28.06.2016 Не перегружать страницу
-
-        } else {
-
-            session.removeAttribute("LoginError");
-            UserDao userDao = (UserDao) getServletContext().getAttribute(DbInitializer.USER_DAO);
-            final Optional<User> user = userDao.get(email, password);
-            if (user.isPresent()) {
-                session.setAttribute(USER, user.get());
-                System.out.println("Ура пользователь найден!!!!!!");
-            } else {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            }
+            error(errorMessage, request, response);
+            return;
         }
 
+        //Check if login is correct
+        Optional<User> user = userDao.getByEmailPassword(email, password);
+        if (!user.isPresent()) {
+            user = userDao.getByEmail(email);
+            if (!user.isPresent())
+                errorMessage = Validator.getMessage(Validator.ErrorMessage.USER_NOT_FOUND, session.getLocale());
+            else
+                errorMessage = Validator.getMessage(Validator.ErrorMessage.PASS_INCORRECT, session.getLocale());
+            error(errorMessage, request, response);
+            return;
+        } else {
+            log.info(String.format("Login \"%s\" successful", email));
+            session.setUser(user.get());
+            response.sendRedirect("myprofile.html");
+        }
+
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
     }
 
 }

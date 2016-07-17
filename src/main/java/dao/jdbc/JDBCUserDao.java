@@ -3,56 +3,51 @@ package dao.jdbc;
 import dao.interfaces.UserDao;
 import model.User;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
-
-import static dao.service.Util.prepareStatement;
 
 @FunctionalInterface
 public interface JDBCUserDao extends UserDao {
 
     String SQL_GET_BY_ID =
             "SELECT id, email, first_name, last_name, birth_date FROM users WHERE id = ?";
+    String SQL_GET_BY_EMAIL =
+            "SELECT id, email, first_name, last_name, birth_date FROM users WHERE email = ?";
     String SQL_GET_BY_EMAIL_AND_PASSWORD =
-            "SELECT id, email, first_name, last_name, birth_date FROM users WHERE email = ? AND password = ?";
-//    "SELECT id, email, first_name, last_name, birth_date FROM User WHERE email = ? AND password = MD5(?)"; // TODO: 29.06.2016 Заменить на MD5
+            "SELECT id, email, first_name, last_name, birth_date FROM users WHERE email = ? AND password = MD5(?)";
+    String SQL_GET_ALL =
+            "SELECT id, email, first_name, last_name, birth_date FROM users";
+    String SQL_SET =
+            "INSERT INTO users (email, password, first_name, last_name, reg_date) VALUES (?, MD5(?), ?, ?, ?)";
 
     @Override
-    default Optional<User> get(long id) {
-        return find(SQL_GET_BY_ID, id);
+    default Optional<User> getById(long id) {
+        return query(User.class, SQL_GET_BY_ID, id);
     }
 
     @Override
-    default Optional<User> get(String email, String password) {
-        return find(SQL_GET_BY_EMAIL_AND_PASSWORD, email, password);
+    default Optional<User> getByEmailPassword(String email, String password) {
+        return query(User.class, SQL_GET_BY_EMAIL_AND_PASSWORD, email, password);
     }
 
-    default Optional<User> find(String sql, Object... values) {//// TODO: 29.06.2016 Уточнить можно ли делать такое 
-        User user = null;
-
-        try {
-            PreparedStatement statement = prepareStatement(getConnection(), sql, false, values);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                user = map(resultSet);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return Optional.ofNullable(user);
+    @Override
+    default Optional<User> getByEmail(String email) {
+        return query(User.class, SQL_GET_BY_EMAIL, email);
     }
 
-    default User map(ResultSet resultSet) throws SQLException { //// TODO: 29.06.2016 Как автоматиирваь Mappng? 
-        User user = new User();
-        user.setId(resultSet.getLong("id"));
-        user.setEmail(resultSet.getString("email"));
-        user.setFirst_name(resultSet.getString("first_name"));
-        user.setLast_name(resultSet.getString("last_name"));
-        user.setBirth_date(resultSet.getDate("birth_date"));
-        return user;
+    @Override
+    default List<User> getAll(String searchParam) {
+        return new ArrayList(listQuery(User.class, SQL_GET_ALL)); // TODO: 11.07.2016 Возможно стоит поменять коллекцию на List
+    }
+
+    @Override
+    default Optional<User> addNew(String email, String password, String first_name, String last_name) {
+        Timestamp now = new Timestamp(new Date().getTime());
+        update(SQL_SET, email, password, first_name, last_name, now);
+        return getByEmail(email);
     }
 
 }

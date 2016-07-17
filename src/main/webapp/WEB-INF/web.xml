@@ -12,6 +12,11 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
+    <context-param>
+        <param-name>log4j-config</param-name>
+        <param-value>META-INF/log4j.xml</param-value>
+    </context-param>
+
     <!--<resource-ref>
         <description>Test DB Connection Pool</description>
         <res-ref-name>jdbc/TestDB</res-ref-name>
