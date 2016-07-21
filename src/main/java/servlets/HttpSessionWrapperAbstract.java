@@ -6,17 +6,17 @@ import javax.servlet.http.HttpSession;
 import java.util.Locale;
 
 @Deprecated
-public abstract class AbstractHttpSession {
+public abstract class HttpSessionWrapperAbstract {
 
     private static final String LOCALE_NAME = "locale";
     private static final String USER_NAME = "user";
 
     private static HttpSession session;
 
-    public static AbstractHttpSession getInstance(HttpSession httpSession) {
+    public static HttpSessionWrapperAbstract getInstance(HttpSession httpSession) {
         session = httpSession;
         try {
-            return AbstractHttpSession.class.newInstance();
+            return HttpSessionWrapperAbstract.class.newInstance();
         } catch (Exception e) {
             return null;
         }

@@ -1,10 +1,21 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<style type="text/css">
+    <%@include file="/css/chat.css"%>
+</style>
+<script>
+    <%@include file="/js/avatar.js"%>
+</script>
+
 <html>
 <head>
     <title>BenthMates</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
+    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
@@ -12,7 +23,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 
-<body ng-app="">
+<body>
+
+<c:if test="${currentTab==null}">
+    <c:set var="currentTab" value="profile" scope="session"/>
+</c:if>
 
 <div class="container">
     <nav class="navbar navbar-default">
@@ -39,56 +54,65 @@
             <div class="well">
                 <img class="img-rounded img-responsive center-block" alt="user_pic" src="http://vk.com/images/deactivated_200.gif">
             </div>
-            <div class="well">
-                <ul class="nav nav-pills nav-stacked">
-                    <li class="active"><a data-toggle="pill" id="profile" href="#tab_profile">Profile</a></li>
-                    <li><a data-toggle="pill" id="friends" href="#tab_friends">Friends</a></li>
-                    <li><a data-toggle="pill" id="followers" href="#tab_followers">Followers</a></li>
-                    <li><a data-toggle="pill" id="messages"  href="#tab_messages">Messages</a></li>
-                </ul>
+            <div class="well" id="tabs">
+                <form action="/logout" method="get">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li<c:if test="${currentTab=='profile'}"> class="active"</c:if>>
+                            <a href="profile">Profile</a>
+                        </li>
+                        <li<c:if test="${currentTab=='friends'}"> class="active"</c:if>>
+                            <a href="friends">Friends</a>
+                        </li>
+                        <li<c:if test="${currentTab=='messages' || currentTab=='conversation'}"> class="active"</c:if>>
+                            <a href="messages">Messages</a>
+                        </li>
+                        <li<c:if test="${currentTab=='followers'}"> class="active"</c:if>>
+                            <a href="followers">Followers</a>
+                        </li>
+                    </ul>
+                </form>
             </div>
         </div>
         <div class="col-sm-10">
             <div class="tab-content">
-                <div class="tab-pane fade in active" id="tab_profile">
-                    <div ng-include="'profile.html'"></div>
+                <div class="tab-pane fade<c:if test="${currentTab=='profile'}"> in active</c:if>" id="profile">
+                    <jsp:include page="profile.jsp"/>
                 </div>
-                <div class="tab-pane fade" id="tab_friends">
-                    <div ng-include="'friends.html'"></div>
+                <div class="tab-pane fade<c:if test="${currentTab=='friends'}"> in active</c:if>" id="friends">
+                    <jsp:include page="friends.jsp"/>
                 </div>
-                <div class="tab-pane fade" id="tab_followers">
+                <div class="tab-pane fade<c:if test="${currentTab=='conversation'}"> in active</c:if>" id="conversation">
+                    <jsp:include page="conversation.jsp"/>
+                </div>
+                <div class="tab-pane fade<c:if test="${currentTab=='followers'}"> in active</c:if>" id="followers">
                     <h3>Followers</h3>
                     <p>Some content</p>
-                </div>
-                <div class="tab-pane fade" id="tab_messages">
-                    <h3>Messages</h3>
-                    <p>Some contentghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-footer">
-
         </div>
     </div>
 </div>
 
-<script>
+<!--<script>
     $(document).ready(function(){
         $(".nav-pills a").click(function(){
             //$(this).tab('show');
             //alert($(this).attr('id'));
+            //$.post($(this).attr('id'), { name:"Donald", town:"Ducktown" });
             $.ajax({
                 url : $(this).attr('id'),
                 type: 'get',
                 data : {
                     userName : 'fhdh'
-                }
+               }
             });
         });
     });
-</script>
+</script>-->
 
 </body>
 </html>

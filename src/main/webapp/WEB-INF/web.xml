@@ -17,6 +17,10 @@
         <param-value>META-INF/log4j.xml</param-value>
     </context-param>
 
+    <listener>
+        <display-name>SessionListener</display-name>
+        <listener-class>listeners.SessionListener</listener-class>
+    </listener>
     <!--<resource-ref>
         <description>Test DB Connection Pool</description>
         <res-ref-name>jdbc/TestDB</res-ref-name>

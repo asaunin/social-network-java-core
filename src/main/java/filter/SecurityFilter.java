@@ -1,36 +1,54 @@
 package filter;
 
+import dao.interfaces.UserDao;
 import lombok.extern.log4j.Log4j;
+import model.User;
+import service.DBInitializer;
 import servlets.HttpFilter;
 import servlets.HttpSessionWrapper;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Optional;
 
-@WebFilter(filterName = "SecurityFilter", urlPatterns = {"/*"})
 @Log4j
+@WebFilter("/*")
 public class SecurityFilter implements HttpFilter {
 
-    private String[] paths = {
-            "/settings",
-            "/edit",
-            "/delete"
-    };
+    private UserDao userDao;
 
-    private boolean isAuthorizedAccess(HttpServletRequest request) {
+    private final String[] paths = {"/localisation",
+                                    "/login",
+                                    "/logout",
+                                    "/registration"};
+
+    private final String[] extensions = {".ico"};
+
+    private boolean isAllowedUri(HttpServletRequest request) {
         String context = request.getContextPath();
         String path = request.getRequestURI().substring(context.length());
         for (String item : paths) {
-            if (item.equals(path)) {
+            if (path.startsWith(item) || path.equals("/")) {
+                return true;
+            }
+        }
+        for (String item : extensions) {
+            if (path.endsWith(item)) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        userDao = (UserDao) filterConfig.getServletContext().getAttribute(DBInitializer.USER_DAO);
     }
 
     @Override
@@ -45,11 +63,20 @@ public class SecurityFilter implements HttpFilter {
         if (!session.hasLocale())
             session.setLocale(Locale.getDefault());
 
-        if (!session.hasUser() && isAuthorizedAccess(request)) {
-            response.sendRedirect("login.jsp");
-            return;
+        //Skip authorisation if assertion mode
+        boolean assertsEnabled = false;
+        assert assertsEnabled = true;
+        if (assertsEnabled && !session.hasUser()) {
+            Optional<User> user = userDao.getByEmail("vasia@mail.ru"); // TODO: 19.07.2016 Переписать на параметры 
+            if (user.isPresent())
+                session.setUser(user.get());
         }
-        chain.doFilter(request, response);
+
+        //Security check
+        if (session.hasUser() || isAllowedUri(request))
+            chain.doFilter(request, response);
+        else
+            response.sendRedirect("login.jsp");
 
     }
 

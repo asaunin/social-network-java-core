@@ -1,9 +1,9 @@
 package servlets;
 
 import dao.interfaces.UserDao;
-import service.DBInitializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
+import service.DBInitializer;
 import service.Validator;
 
 import javax.servlet.ServletConfig;
@@ -31,11 +31,12 @@ public class Login extends HttpServlet {
     private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.error(errorMessage);
         request.setAttribute("errorMessage", errorMessage);
-        request.getRequestDispatcher("/login.jsp").forward(request, response); // TODO: 14.07.2016 http://stackoverflow.com/questions/17001185/pass-hidden-parameters-using-response-sendredirect 
+        request.getRequestDispatcher("/login.jsp").forward(request, response); // TODO: 14.07.2016 http://stackoverflow.com/questions/17001185/pass-hidden-parameters-using-response-sendredirect
     }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         userDao = (UserDao) config.getServletContext().getAttribute(DBInitializer.USER_DAO);
     }
 
@@ -66,7 +67,7 @@ public class Login extends HttpServlet {
         } else {
             log.info(String.format("Login \"%s\" successful", email));
             session.setUser(user.get());
-            response.sendRedirect("myprofile.html");
+            response.sendRedirect("myprofile.jsp");
         }
 
     }

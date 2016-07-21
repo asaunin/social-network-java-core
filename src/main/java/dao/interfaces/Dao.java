@@ -1,5 +1,6 @@
 package dao.interfaces;
 
+import common.Private;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
@@ -20,14 +21,15 @@ public interface Dao {
 
     Connection getConnection() throws SQLException;
 
-    default <T> Optional<T> query(Class<T> type, String sql, Object... values) {
+    @Private
+    default <T> Optional<T> select(Class<T> type, String sql, Object... values) {
 
         T bean = null;
         QueryRunner run = new QueryRunner();
-        ResultSetHandler<T> h = new BeanHandler<T>(type);
+        ResultSetHandler<T> rsh = new BeanHandler<T>(type);
 
         try {
-            bean = run.query(getConnection(), sql, h, values);
+            bean = run.query(getConnection(), sql, rsh, values);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -36,14 +38,15 @@ public interface Dao {
         return Optional.ofNullable(bean);
     }
 
-    default <T> Collection<T> listQuery(Class<T> type, String sql, Object... values) {
+    @Private
+    default <T> Collection<T> selectCollection(Class<T> type, String sql, Object... values) {
 
-        List<T> bean = null;
+        Collection<T> bean = null;
         QueryRunner run = new QueryRunner();
-        ResultSetHandler<List<T>> h = new BeanListHandler<T>(type);
+        ResultSetHandler<List<T>> rsh = new BeanListHandler<T>(type);
 
         try {
-            bean = run.query(getConnection(), sql, h, values);
+            bean = run.query(getConnection(), sql, rsh, values);
         } catch (SQLException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -52,6 +55,7 @@ public interface Dao {
         return bean;
     }
 
+    @Private
     default int update(String sql, Object... values) {
 
         int count = 0;
@@ -65,6 +69,23 @@ public interface Dao {
         }
 
         return count;
+    }
+
+    @Private
+    default <T> Optional<T> insert(Class<T> type, String sql, Object... values) {
+
+        T bean = null;
+        QueryRunner run = new QueryRunner();
+        ResultSetHandler<T> rsh = new BeanHandler<T>(type);
+
+        try {
+            bean = run.insert(getConnection(), sql, rsh, values);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return Optional.ofNullable(bean);
     }
 
 }

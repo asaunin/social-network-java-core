@@ -1,6 +1,7 @@
 package service;
 
-import dao.jdbc.JDBCUserDao;
+import dao.jdbc.MessageDaoImpl;
+import dao.jdbc.UserDaoImpl;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -19,6 +20,7 @@ public class DBInitializer implements ServletContextListener {
     private static DataSource ds;
 
     public static final String USER_DAO = "userDao";
+    public static final String MESSAGE_DAO = "messageDao";
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -44,9 +46,10 @@ public class DBInitializer implements ServletContextListener {
         }
 
         //Initialize DB Connection
-        servletContext.setAttribute(USER_DAO, (JDBCUserDao) ds::getConnection);
-//        servletContext.setAttribute(GUN_DAO, (MySqlGunDao) ds::getConnection);
+        servletContext.setAttribute(USER_DAO, (UserDaoImpl) ds::getConnection);
+        servletContext.setAttribute(MESSAGE_DAO, (MessageDaoImpl) ds::getConnection);
 //        servletContext.setAttribute(INSTANCE_DAO, (MySqlInstanceDao) ds::getConnection);
 
     }
+
 }

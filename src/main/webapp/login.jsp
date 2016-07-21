@@ -40,7 +40,7 @@
                                       <span class="input-group-addon">
                                           <i class="glyphicon glyphicon-user"></i>
                                       </span>
-                                    <input class="form-control" placeholder=${email} name="email" type="text" value="<c:out value="${param.email}"/>" autofocus>
+                                    <input class="form-control" placeholder=${email} name="email" type="text" value=${param.email} autofocus required maxlength="255">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -48,7 +48,7 @@
                                       <span class="input-group-addon">
                                           <i class="glyphicon glyphicon-lock"></i>
                                       </span>
-                                    <input class="form-control" placeholder=${password} name="password" type="password" value="">
+                                    <input class="form-control" placeholder=${password} name="password" type="password" value="" required maxlength="255">
                                 </div>
                             </div>
                             <c:if test="${not empty errorMessage}">

@@ -16,7 +16,6 @@ public class Logout  extends HttpServlet {
 
         final HttpSession session = request.getSession();
         
-        //response.setContentType("text/html"); // ASK Для чего
         Cookie[] cookies = request.getCookies();
         if(cookies != null){
             for(Cookie cookie : cookies){

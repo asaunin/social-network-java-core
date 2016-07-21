@@ -29,29 +29,29 @@
                 <div class="panel-body">
                     <form role="form" action="/register" method="post">
                         <div class="form-group">
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Email" value="<c:out value="${param.email}"/>">
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Email" value=${param.email} required maxlength="255">
                         </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First name" value="<c:out value="${param.first_name}"/>">
+                                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First name" value=${param.first_name} required maxlength="255">
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last name" value="<c:out value="${param.last_name}"/>">
+                                    <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last name" value=${param.last_name} required maxlength="255">
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+                                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required maxlength="255">
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirm password">
+                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirm password" required maxlength="255">
                                 </div>
                             </div>
                         </div>

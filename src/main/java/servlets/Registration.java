@@ -25,11 +25,12 @@ public class Registration extends HttpServlet {
     private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.error(errorMessage);
         request.setAttribute("errorMessage", errorMessage);
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
+        request.getRequestDispatcher("/registration.jsp").forward(request, response);
     }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         userDao = (UserDao) config.getServletContext().getAttribute(DBInitializer.USER_DAO);
     }
 
@@ -68,7 +69,7 @@ public class Registration extends HttpServlet {
         } else {
             log.info(String.format("User \"%s\" successfully registered", email));
             session.setUser(user.get());
-            response.sendRedirect("myprofile.html");
+            response.sendRedirect("myprofile.jsp");
         }
 
     }
