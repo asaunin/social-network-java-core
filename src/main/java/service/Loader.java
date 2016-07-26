@@ -19,7 +19,7 @@ public class Loader { // TODO: 26.07.2016 Пока не ясно зачем ну
 //        tomcat.start();
 //        tomcat.getServer().await();
 
-        System.out.println("варырар");
+        System.out.println("варыра5");
 
         Tomcat tomcat = new Tomcat();
         tomcat.enableNaming();
