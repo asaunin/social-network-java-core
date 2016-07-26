@@ -27,31 +27,31 @@
                     <strong>Please sign up for BenchMates</strong>
                 </div>
                 <div class="panel-body">
-                    <form role="form" action="/register" method="post">
+                    <form role="form" action="/register" method="post" autocomplete="off">
                         <div class="form-group">
-                            <input type="email" name="email" id="email" class="form-control" placeholder="Email" value=${param.email} required maxlength="255">
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Email" required maxlength="255" value='${param.email}'>
                         </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First name" value=${param.first_name} required maxlength="255">
+                                    <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First name" required maxlength="255" value='${param.first_name}'>
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last name" value=${param.last_name} required maxlength="255">
+                                    <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last name" required maxlength="255" value='${param.last_name}'>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required maxlength="255">
+                                    <input type="password" name="password" id="password" class="form-control" required maxlength="255" placeholder="Password">
                                 </div>
                             </div>
                             <div class="col-xs-6 col-sm-6 col-md-6">
                                 <div class="form-group">
-                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="Confirm password" required maxlength="255">
+                                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required maxlength="255" placeholder="Confirm password">
                                 </div>
                             </div>
                         </div>

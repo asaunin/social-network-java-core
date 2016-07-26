@@ -3,7 +3,8 @@ package model;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.sql.Date;
 
 @Data
 public class User implements Serializable{
@@ -14,8 +15,10 @@ public class User implements Serializable{
     private String last_name;
     private String name;
     private String sex;
+    private boolean isuserfriend;
+    private boolean isfriendofuser;
     private Date birth_date;
-    private Date reg_date;
+    private Timestamp reg_date;
     private String phone;
 
 }

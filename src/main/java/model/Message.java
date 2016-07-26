@@ -1,9 +1,11 @@
 package model;
 
-import dao.jdbc.MessageDb;
+import dao.beans.MessageBean;
 import dao.jdbc.UserDaoImpl;
 import lombok.Data;
+import lombok.extern.log4j.Log4j;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,22 +14,25 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
 
+@Log4j
 @Data
-public class Message {
+public class Message implements Serializable {
 
     private long id;
     private Timestamp date;
-    private User author;
+    private User sender;
+    private User recipient;
     private String body;
     private String formatted_date;
 
-    public static Message from(MessageDb messageDb, User sender) {
+    public static Message from(MessageBean messageBean, User sender, User recipient) {
 
         Message message = new Message();
-        message.id = messageDb.getId();
-        message.date = messageDb.getDate();
-        message.body = messageDb.getBody();
-        message.author = sender;
+        message.id = messageBean.getId();
+        message.date = messageBean.getDate();
+        message.body = messageBean.getBody();
+        message.sender = sender;
+        message.recipient = recipient;
 
         //Message date formatting
         LocalDateTime messageDate = message.date.toLocalDateTime();
@@ -41,10 +46,10 @@ public class Message {
 
     }
 
-    public static Message from(MessageDb messageDb, UserDaoImpl userDao) {
-
-        return from(messageDb, userDao.getById(messageDb.getSender()).get());
-
+    public static Message from(MessageBean messageBean, UserDaoImpl userDao) {
+        User sender = userDao.getById(messageBean.getSender()).get();
+        User recipient = userDao.getById(messageBean.getRecipient()).get();
+        return from(messageBean, sender, recipient);
     }
 
 }

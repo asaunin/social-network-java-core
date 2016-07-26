@@ -1,4 +1,4 @@
-package service;
+package listeners;
 
 import dao.jdbc.MessageDaoImpl;
 import dao.jdbc.UserDaoImpl;
@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 import java.io.File;
 
 @WebListener
-public class DBInitializer implements ServletContextListener {
+public class Initializer implements ServletContextListener {
 
     @Resource(name="jdbc/ProdDB")
     private static DataSource ds;
@@ -48,7 +48,6 @@ public class DBInitializer implements ServletContextListener {
         //Initialize DB Connection
         servletContext.setAttribute(USER_DAO, (UserDaoImpl) ds::getConnection);
         servletContext.setAttribute(MESSAGE_DAO, (MessageDaoImpl) ds::getConnection);
-//        servletContext.setAttribute(INSTANCE_DAO, (MySqlInstanceDao) ds::getConnection);
 
     }
 

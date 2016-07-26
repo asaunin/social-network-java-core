@@ -1,7 +1,7 @@
 package servlets;
 
 import dao.interfaces.UserDao;
-import service.DBInitializer;
+import listeners.Initializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
 import service.Validator;
@@ -23,7 +23,7 @@ public class Registration extends HttpServlet {
     private UserDao userDao;
 
     private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.error(errorMessage);
+        log.warn(errorMessage);
         request.setAttribute("errorMessage", errorMessage);
         request.getRequestDispatcher("/registration.jsp").forward(request, response);
     }
@@ -31,7 +31,7 @@ public class Registration extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        userDao = (UserDao) config.getServletContext().getAttribute(DBInitializer.USER_DAO);
+        userDao = (UserDao) config.getServletContext().getAttribute(Initializer.USER_DAO);
     }
 
     @Override
@@ -44,6 +44,7 @@ public class Registration extends HttpServlet {
         final String password_confirmation = request.getParameter("password_confirmation");
         final String first_name = request.getParameter("first_name");
         final String last_name = request.getParameter("last_name");
+        Optional<User> user = null;
 
         //Validate input parameters
         String errorMessage = Validator.validateRegistration(email, password, password_confirmation, first_name, last_name, locale);
@@ -53,7 +54,7 @@ public class Registration extends HttpServlet {
         }
 
         //Check if user is already registered
-        Optional<User> user = userDao.getByEmailPassword(email, password);
+        user = userDao.getByEmailPassword(email, password);
         if (user.isPresent()) {
             errorMessage = Validator.getMessage(Validator.ErrorMessage.DUPLICATED_REGISTRATION, locale);
             error(errorMessage, request, response);
@@ -61,16 +62,10 @@ public class Registration extends HttpServlet {
         }
 
         //Add new user
-        user = userDao.addNew(email, password, first_name, last_name);
-        if (!user.isPresent()) {
-            errorMessage = Validator.getMessage(Validator.ErrorMessage.REGISTRATION, locale);
-            error(errorMessage, request, response);
-            return;
-        } else {
-            log.info(String.format("User \"%s\" successfully registered", email));
-            session.setUser(user.get());
-            response.sendRedirect("myprofile.jsp");
-        }
+        User sessionUser = userDao.addNew(email, password, first_name, last_name).get();
+        log.info(String.format("User \"%s\" successfully registered", email));
+        session.setUser(sessionUser);
+        response.sendRedirect("/profile?id=" + sessionUser.getId());
 
     }
 

@@ -1,3 +1,4 @@
+<%--@elvariable id="user" type="model.User"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -23,13 +24,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 
-<body>
+<body id="body">
 
 <c:if test="${currentTab==null}">
     <c:set var="currentTab" value="profile" scope="session"/>
 </c:if>
 
-<div class="container">
+<div class="container" id="maincont">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -58,16 +59,13 @@
                 <form action="/logout" method="get">
                     <ul class="nav nav-pills nav-stacked">
                         <li<c:if test="${currentTab=='profile'}"> class="active"</c:if>>
-                            <a href="profile">Profile</a>
+                            <a href="profile?id=${user.id}">Profile</a>
                         </li>
-                        <li<c:if test="${currentTab=='friends'}"> class="active"</c:if>>
-                            <a href="friends">Friends</a>
+                        <li<c:if test="${currentTab=='users'}"> class="active"</c:if>>
+                            <a href="users">Users</a>
                         </li>
                         <li<c:if test="${currentTab=='messages' || currentTab=='conversation'}"> class="active"</c:if>>
-                            <a href="messages">Messages</a>
-                        </li>
-                        <li<c:if test="${currentTab=='followers'}"> class="active"</c:if>>
-                            <a href="followers">Followers</a>
+                            <a href="messages?id=${user.id}">Messages</a>
                         </li>
                     </ul>
                 </form>
@@ -78,15 +76,14 @@
                 <div class="tab-pane fade<c:if test="${currentTab=='profile'}"> in active</c:if>" id="profile">
                     <jsp:include page="profile.jsp"/>
                 </div>
-                <div class="tab-pane fade<c:if test="${currentTab=='friends'}"> in active</c:if>" id="friends">
-                    <jsp:include page="friends.jsp"/>
+                <div class="tab-pane fade<c:if test="${currentTab=='users'}"> in active</c:if>" id="users">
+                    <jsp:include page="users.jsp"/>
                 </div>
                 <div class="tab-pane fade<c:if test="${currentTab=='conversation'}"> in active</c:if>" id="conversation">
                     <jsp:include page="conversation.jsp"/>
                 </div>
-                <div class="tab-pane fade<c:if test="${currentTab=='followers'}"> in active</c:if>" id="followers">
-                    <h3>Followers</h3>
-                    <p>Some content</p>
+                <div class="tab-pane fade<c:if test="${currentTab=='messages'}"> in active</c:if>" id="messages">
+                    <jsp:include page="messages.jsp"/>
                 </div>
             </div>
         </div>

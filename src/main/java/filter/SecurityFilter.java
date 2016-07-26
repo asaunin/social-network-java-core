@@ -1,10 +1,9 @@
 package filter;
 
 import dao.interfaces.UserDao;
+import listeners.Initializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
-import service.DBInitializer;
-import servlets.HttpFilter;
 import servlets.HttpSessionWrapper;
 
 import javax.servlet.FilterChain;
@@ -48,7 +47,7 @@ public class SecurityFilter implements HttpFilter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        userDao = (UserDao) filterConfig.getServletContext().getAttribute(DBInitializer.USER_DAO);
+        userDao = (UserDao) filterConfig.getServletContext().getAttribute(Initializer.USER_DAO);
     }
 
     @Override
@@ -56,6 +55,7 @@ public class SecurityFilter implements HttpFilter {
             IOException, ServletException {
 
         final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final long TEST_USER_ID = 1L;
 
         request.setCharacterEncoding("UTF-8");
 
@@ -67,9 +67,14 @@ public class SecurityFilter implements HttpFilter {
         boolean assertsEnabled = false;
         assert assertsEnabled = true;
         if (assertsEnabled && !session.hasUser()) {
-            Optional<User> user = userDao.getByEmail("vasia@mail.ru"); // TODO: 19.07.2016 Переписать на параметры 
-            if (user.isPresent())
-                session.setUser(user.get());
+            Optional<User> user = userDao.getById(TEST_USER_ID);
+            if (user.isPresent()) {
+                User sessionUser = user.get();
+                log.info(String.format("Login skipped in test mode. User \"%s\" logged without authorisation", sessionUser.getEmail()));
+                session.setUser(sessionUser);
+//                response.sendRedirect("/profile?id=" + sessionUser.getId()); // TODO: 21.07.2016 Doesn't work because of multiple session initialisation
+//                return;
+            }
         }
 
         //Security check

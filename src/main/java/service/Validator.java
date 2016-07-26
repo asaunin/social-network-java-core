@@ -37,21 +37,6 @@ public abstract class Validator {
         }
 
     }
-/*
-    public static final String ERROR_EMAIL_NOT_VALID = "local.error.emailnotvalid";
-    public static final String ERROR_NAME_NOT_VALID = "local.error.namenotvalid";
-    public static final String ERROR_USER_NOT_FOUND = "local.error.usernotfound";
-    public static final String ERROR_PASS_NOT_VALID = "local.error.passwordnotvalid";
-    public static final String ERROR_PASS_INCORRECT = "local.error.passwordincorrect";
-    public static final String ERROR_PASS_DIFFERS = "local.error.passwordsdiffers";
-    public static final String ERROR_REGISTRATION = "local.error.registration";
-    public static final String ERROR_DUPLICATED_REGISTRATION = "local.error.duplicatedregistration";
-
-    private static String getMessage(String key, Locale locale) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(RB_NAME, locale);
-        return resourceBundle.getString(key);
-    }
-*/
 
     public static String getMessage(ErrorMessage enumMessage, Locale locale) {
         return ErrorMessage.getMessage(enumMessage, locale);

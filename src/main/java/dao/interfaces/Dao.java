@@ -1,12 +1,12 @@
 package dao.interfaces;
 
 import common.Private;
+import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.log4j.Logger;
-import servlets.Login;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,9 +17,12 @@ import java.util.Optional;
 @FunctionalInterface
 public interface Dao {
 
-    static Logger logger = Logger.getLogger(Login.class);
+    Logger log = Logger.getLogger(Dao.class);
+    String errorMessage = "SQL query error";
 
     Connection getConnection() throws SQLException;
+
+    //SELECT * FROM pg_stat_activity; for active connections monitoring
 
     @Private
     default <T> Optional<T> select(Class<T> type, String sql, Object... values) {
@@ -28,14 +31,19 @@ public interface Dao {
         QueryRunner run = new QueryRunner();
         ResultSetHandler<T> rsh = new BeanHandler<T>(type);
 
+        Connection conn = null;
         try {
-            bean = run.query(getConnection(), sql, rsh, values);
+            conn = getConnection();
+            bean = run.query(conn, sql, rsh, values);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
             e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
         }
-
         return Optional.ofNullable(bean);
+
     }
 
     @Private
@@ -45,30 +53,41 @@ public interface Dao {
         QueryRunner run = new QueryRunner();
         ResultSetHandler<List<T>> rsh = new BeanListHandler<T>(type);
 
+        Connection conn = null;
         try {
-            bean = run.query(getConnection(), sql, rsh, values);
+            conn = getConnection();
+            bean = run.query(conn, sql, rsh, values);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
             e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
         }
-
         return bean;
+
     }
 
     @Private
-    default int update(String sql, Object... values) {
+    default int delete(String sql, Object... values) {
 
         int count = 0;
         QueryRunner run = new QueryRunner();
 
+        Connection conn = null;
         try {
-            count = run.update(getConnection(), sql, values);
+            conn = getConnection();
+            count = run.update(conn, sql, values);
+            DbUtils.closeQuietly(conn);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
             e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
         }
-
         return count;
+
     }
 
     @Private
@@ -78,14 +97,20 @@ public interface Dao {
         QueryRunner run = new QueryRunner();
         ResultSetHandler<T> rsh = new BeanHandler<T>(type);
 
+        Connection conn = null;
         try {
-            bean = run.insert(getConnection(), sql, rsh, values);
+            conn = getConnection();
+            bean = run.insert(conn, sql, rsh, values);
+            DbUtils.closeQuietly(conn);
         } catch (SQLException e) {
-            logger.error(e.getMessage());
             e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
         }
-
         return Optional.ofNullable(bean);
+
     }
 
 }

@@ -13,7 +13,10 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
     String LOCALE_NAME = "locale";
     String USER_NAME = "user";
     String PROFILE_NAME = "profile";
+    String CURRENT_USER_PAGE = "currentUserPage";
     String CURRENT_TAB = "currentTab";
+    String NUMBER_OF_USER_PAGES = "numberOfUserPages";
+    int USERS_PER_PAGE = 10;
 
     static HttpSessionWrapper from(HttpSession httpSession) {
         return () -> httpSession;
@@ -41,6 +44,12 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
     default void setUser(User user) {
         toSrc().setAttribute(USER_NAME, user);
     }
+
+    default int getCurrentUserPage() { return (int) toSrc().getAttribute(CURRENT_USER_PAGE); }
+
+    default void setCurrentUserPage(int currentUserPage) { toSrc().setAttribute(CURRENT_USER_PAGE, currentUserPage); }
+
+    default void setNumberOfUserPages(int numberOfProfilePages) { toSrc().setAttribute(NUMBER_OF_USER_PAGES, numberOfProfilePages); }
 
     default boolean hasUser() {
         return !(toSrc().getAttribute(USER_NAME) == null);

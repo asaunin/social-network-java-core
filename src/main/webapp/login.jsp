@@ -33,14 +33,14 @@
                     <strong>${sign_in_continue}</strong>
                 </div>
                 <div class="panel-body">
-                    <form role="form" action="/login" method="post">
+                    <form role="form" action="/login" method="post" autocomplete="off">
                         <div class="col-sm-12 col-md-10 col-md-offset-1 ">
                             <div class="form-group">
                                 <div class="input-group">
                                       <span class="input-group-addon">
                                           <i class="glyphicon glyphicon-user"></i>
                                       </span>
-                                    <input class="form-control" placeholder=${email} name="email" type="text" value=${param.email} autofocus required maxlength="255">
+                                    <input class="form-control" placeholder='${email}' value='${param.email}' name="email" type="text" autofocus required autocomplete="off" maxlength="255" >
                                 </div>
                             </div>
                             <div class="form-group">
@@ -48,7 +48,7 @@
                                       <span class="input-group-addon">
                                           <i class="glyphicon glyphicon-lock"></i>
                                       </span>
-                                    <input class="form-control" placeholder=${password} name="password" type="password" value="" required maxlength="255">
+                                    <input class="form-control" placeholder='${password}' name="password" type="password" value="" autocomplete="off" required maxlength="255">
                                 </div>
                             </div>
                             <c:if test="${not empty errorMessage}">

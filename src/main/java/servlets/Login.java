@@ -1,9 +1,9 @@
 package servlets;
 
 import dao.interfaces.UserDao;
+import listeners.Initializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
-import service.DBInitializer;
 import service.Validator;
 
 import javax.servlet.ServletConfig;
@@ -20,16 +20,15 @@ import java.util.Optional;
 public class Login extends HttpServlet {
 
     // TODO: 06.07.2016 Подключить логгер
-    // TODO: 14.07.2016 Прописать пути в фильтр
-    // TODO: 11.07.2016 Реализовать logout
     // TODO: 14.07.2016 Вместо forward лучше использовать sendRedirect
     // TODO: 14.07.2016 Развертка приложения
     // TODO: 14.07.2016 Тестирование под нагрузкой Curla
+    // TODO: 21.07.2016 Synhronized 
 
     private UserDao userDao;
 
     private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.error(errorMessage);
+        log.warn(errorMessage);
         request.setAttribute("errorMessage", errorMessage);
         request.getRequestDispatcher("/login.jsp").forward(request, response); // TODO: 14.07.2016 http://stackoverflow.com/questions/17001185/pass-hidden-parameters-using-response-sendredirect
     }
@@ -37,7 +36,7 @@ public class Login extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        userDao = (UserDao) config.getServletContext().getAttribute(DBInitializer.USER_DAO);
+        userDao = (UserDao) config.getServletContext().getAttribute(Initializer.USER_DAO);
     }
 
     @Override
@@ -63,11 +62,11 @@ public class Login extends HttpServlet {
             else
                 errorMessage = Validator.getMessage(Validator.ErrorMessage.PASS_INCORRECT, session.getLocale());
             error(errorMessage, request, response);
-            return;
         } else {
+            User sessionUser = user.get();
             log.info(String.format("Login \"%s\" successful", email));
-            session.setUser(user.get());
-            response.sendRedirect("myprofile.jsp");
+            session.setUser(sessionUser);
+            response.sendRedirect("/profile?id=" + sessionUser.getId());
         }
 
     }
