@@ -16,15 +16,15 @@ public interface MessageDaoImpl extends MessageDao {
     String SQL_GET_BY_USER =
             "SELECT id, date, sender, recipient, body FROM messages WHERE ((sender = ? and recipient = ?) or (sender = ? and recipient = ?)) ORDER BY date;";
     String SQL_GET_LAST =
-            "SELECT id, date, sender, recipient, body " +
-                    "FROM messages " +
-                    "INNER JOIN ( SELECT MAX(id) AS most_recent_message_id " +
-                    "               FROM messages " +
-                    "               GROUP BY CASE WHEN sender > recipient THEN recipient ELSE sender END, " +
-                    "                        CASE WHEN sender < recipient THEN recipient ELSE sender END " +
-                    "             ) T ON T.most_recent_message_id = messages.id " +
-                    "WHERE sender = ? OR recipient = ? " +
-                    "ORDER BY date DESC;";
+            "SELECT id, date, sender, recipient, body "
+                    .concat("FROM messages ")
+                    .concat("INNER JOIN ( SELECT MAX(id) AS most_recent_message_id ")
+                    .concat("FROM messages ")
+                    .concat("   GROUP BY CASE WHEN sender > recipient THEN recipient ELSE sender END, ")
+                    .concat("   CASE WHEN sender < recipient THEN recipient ELSE sender END ")
+                    .concat(") T ON T.most_recent_message_id = messages.id ")
+                    .concat("WHERE sender = ? OR recipient = ? ")
+                    .concat("ORDER BY date DESC;");
 
 
     @Override

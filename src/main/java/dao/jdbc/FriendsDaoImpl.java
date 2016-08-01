@@ -14,14 +14,14 @@ public interface FriendsDaoImpl extends FriendsDao {
     String SQL_REMOVE_FRIEND =
             "DELETE FROM friends WHERE userid = ? AND friendid = ?;";
     String SQL_GET_BY_ID_AND_FRIEND =
-            "SELECT id, email, first_name, last_name, birth_date, reg_date, sex, " +
-                    "CONCAT_WS(' ', first_name, last_name) AS name, " +
-                    "CASE WHEN userfriends.friendid ISNULL THEN FALSE ELSE TRUE END AS isuserfriend, " +
-                    "CASE WHEN friendofuser.userid ISNULL THEN FALSE ELSE TRUE END AS isfriendofuser " +
-                    "FROM users " +
-                    "LEFT JOIN friends AS userfriends ON users.id = userfriends.friendid AND userfriends.userid = ? " +
-                    "LEFT JOIN friends AS friendofuser ON users.id = friendofuser.userid AND friendofuser.friendid = ? " +
-                    "WHERE id = ?;";
+            "SELECT id, email, first_name, last_name, birth_date, reg_date, sex, "
+                    .concat("CONCAT_WS(' ', first_name, last_name) AS name, ")
+                    .concat("CASE WHEN userfriends.friendid ISNULL THEN FALSE ELSE TRUE END AS isuserfriend, ")
+                    .concat("CASE WHEN friendofuser.userid ISNULL THEN FALSE ELSE TRUE END AS isfriendofuser ")
+                    .concat("FROM users ")
+                    .concat("LEFT JOIN friends AS userfriends ON users.id = userfriends.friendid AND userfriends.userid = ? ")
+                    .concat("LEFT JOIN friends AS friendofuser ON users.id = friendofuser.userid AND friendofuser.friendid = ? ")
+                    .concat("WHERE id = ?;");
 
     @Override
     default void addFriend(User user, User friend) {

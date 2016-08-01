@@ -9,28 +9,31 @@ import java.io.IOException;
 
 @Log4j
 @WebServlet("/logout")
-public class Logout  extends HttpServlet {
+public class Logout extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = request::getSession;
-        
+        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession(false));
+
         Cookie[] cookies = request.getCookies();
-        if(cookies != null){
-            for(Cookie cookie : cookies){
-                if(cookie.getName().equals("JSESSIONID")){
-                    log.info("JSESSIONID="+cookie.getValue());
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("JSESSIONID")) {
+                    log.info("JSESSIONID=" + cookie.getValue());
                     break;
                 }
             }
         }
 
         //Invalidate the session if exists
-        log.info("User \"" + session.getUser() + "\" logout");
-        request.getSession().invalidate();
-        response.sendRedirect("login.jsp");
+        if (session != null) {
+            log.info("User \"" + session.getUser() + "\" logout");
+            session.setUser(null);
+            session.invalidate();
+            response.sendRedirect("login.jsp");
+        }
 
     }
-    
+
 }

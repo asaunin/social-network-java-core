@@ -27,21 +27,21 @@ public interface UserDaoImpl extends UserDao {
     String SQL_GET_BY_ID =
             "SELECT id, email, first_name, last_name, birth_date, reg_date, sex, CONCAT_WS(' ', first_name, last_name) AS name FROM users WHERE id = ?;";
     String SQL_GET_ALL =
-            "SELECT id, email, first_name, last_name, birth_date, reg_date, sex, " +
-                    "CONCAT_WS(' ', first_name, last_name) AS name, " +
-                    "CASE WHEN userfriends.friendid ISNULL THEN FALSE ELSE TRUE END AS isuserfriend, " +
-                    "CASE WHEN friendofuser.userid ISNULL THEN FALSE ELSE TRUE END AS isfriendofuser " +
-                    "FROM users " +
-                    "LEFT JOIN friends AS userfriends ON users.id = userfriends.friendid AND userfriends.userid = ? " +
-                    "LEFT JOIN friends AS friendofuser ON users.id = friendofuser.userid AND friendofuser.friendid = ? " +
-                    "ORDER BY name " +
-                    "limit ? offset ?;";
+            "SELECT id, email, first_name, last_name, birth_date, reg_date, sex, "
+                    .concat("CONCAT_WS(' ', first_name, last_name) AS name, ")
+                    .concat("CASE WHEN userfriends.friendid ISNULL THEN FALSE ELSE TRUE END AS isuserfriend, ")
+                    .concat("CASE WHEN friendofuser.userid ISNULL THEN FALSE ELSE TRUE END AS isfriendofuser ")
+                    .concat("FROM users ")
+                    .concat("LEFT JOIN friends AS userfriends ON users.id = userfriends.friendid AND userfriends.userid = ? ")
+                    .concat("LEFT JOIN friends AS friendofuser ON users.id = friendofuser.userid AND friendofuser.friendid = ? ")
+                    .concat("ORDER BY name ")
+                    .concat("limit ? offset ?;");
 
     @Override
     default long getNumberOfUsers() {
 
         Optional<LongBean> bean = select(LongBean.class, SQL_GET_NUMBER_OF_USERS);
-            return bean.get().getId();
+        return bean.get().getId();
 
     }
 

@@ -37,7 +37,7 @@ public class SessionDispatcher extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = request::getSession;
+        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession(false));
         final String path = request.getServletPath();
         final String action = path.substring(1);
 
@@ -60,11 +60,8 @@ public class SessionDispatcher extends HttpServlet {
                 break;
 
             case "messages":
-                responseCode = viewMessages(session); // TODO: 26.07.2016 Профиль не требуется
+                responseCode = viewMessages(session);
                 break;
-
-//            case "messages":
-//                break;
 
             default:
                 return;
@@ -83,7 +80,7 @@ public class SessionDispatcher extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = request::getSession;
+        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession(false));
         final String path = request.getServletPath();
         final String action = path.substring(1);
 

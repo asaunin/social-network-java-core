@@ -19,14 +19,12 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
     String NUMBER_OF_USER_PAGES = "numberOfUserPages";
     int USERS_PER_PAGE = 10;
 
-    /**
-     * Do not use.
-     * @return wrapped HttpSession
-     * @deprecated Instead of "from" method one can use lambda as follows: "request::getSession"
-     */
-    @Deprecated
     static HttpSessionWrapper from(HttpSession httpSession) {
-        return () -> httpSession;
+        return (httpSession == null) ? null : () -> httpSession;
+    }
+
+    default void invalidate() {
+        toSrc().invalidate();
     }
 
     default Locale getLocale() {

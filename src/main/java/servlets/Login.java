@@ -20,17 +20,15 @@ import java.util.Optional;
 public class Login extends HttpServlet {
 
     // TODO: 06.07.2016 Подключить логгер
-    // TODO: 14.07.2016 Вместо forward лучше использовать sendRedirect
     // TODO: 14.07.2016 Развертка приложения
     // TODO: 14.07.2016 Тестирование под нагрузкой Curla
-    // TODO: 21.07.2016 Synhronized 
 
     private UserDao userDao;
 
     private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.warn(errorMessage);
         request.setAttribute("errorMessage", errorMessage);
-        request.getRequestDispatcher("/login.jsp").forward(request, response); // TODO: 14.07.2016 http://stackoverflow.com/questions/17001185/pass-hidden-parameters-using-response-sendredirect
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
     @Override
