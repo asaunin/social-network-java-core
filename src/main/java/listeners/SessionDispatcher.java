@@ -1,5 +1,6 @@
 package listeners;
 
+import dao.interfaces.FriendsDao;
 import dao.interfaces.MessageDao;
 import dao.interfaces.UserDao;
 import lombok.extern.log4j.Log4j;
@@ -23,18 +24,20 @@ public class SessionDispatcher extends HttpServlet {
 
     private UserDao userDao;
     private MessageDao messageDao;
+    private FriendsDao friendsDao;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         userDao = (UserDao) config.getServletContext().getAttribute(Initializer.USER_DAO);
         messageDao = (MessageDao) config.getServletContext().getAttribute(Initializer.MESSAGE_DAO);
+        friendsDao = (FriendsDao) config.getServletContext().getAttribute(Initializer.FRIENDS_DAO);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         final String path = request.getServletPath();
         final String action = path.substring(1);
 
@@ -80,7 +83,7 @@ public class SessionDispatcher extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         final String path = request.getServletPath();
         final String action = path.substring(1);
 
@@ -102,11 +105,11 @@ public class SessionDispatcher extends HttpServlet {
                 break;
 
             case "addFriend":
-                userDao.addFriend(session.getUser(), profile.get());
+                friendsDao.addFriend(session.getUser(), profile.get());
                 break;
 
             case "removeFriend":
-                userDao.removeFriend(session.getUser(), profile.get());
+                friendsDao.removeFriend(session.getUser(), profile.get());
                 break;
 
             default:
@@ -134,7 +137,7 @@ public class SessionDispatcher extends HttpServlet {
                 .map(Long::parseLong)
                 .orElse(0L);
 
-        return userDao.getById(id, userId);
+        return friendsDao.getById(id, userId);
 
     }
 
@@ -143,7 +146,7 @@ public class SessionDispatcher extends HttpServlet {
         final User user = session.getUser();
         final int numberOfPages;
         final List<User> profilesList;
-        final long numberOfUsers = userDao.getNumberOfUsers(user);
+        final long numberOfUsers = userDao.getNumberOfUsers() - 1; //Exclude current user
 
         int page;
         try {
@@ -164,7 +167,7 @@ public class SessionDispatcher extends HttpServlet {
         else
             session.setCurrentUserPage(page);
 
-        profilesList = userDao.getAll(user, HttpSessionWrapper.USERS_PER_PAGE, (page-1) * HttpSessionWrapper.USERS_PER_PAGE, "");
+        profilesList = userDao.getList(user, HttpSessionWrapper.USERS_PER_PAGE, (page-1) * HttpSessionWrapper.USERS_PER_PAGE, "");
         session.setProfilesList(profilesList);
         return HttpServletResponse.SC_OK;
 

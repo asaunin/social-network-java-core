@@ -37,7 +37,7 @@ public class Registration extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         final Locale locale = session.getLocale();
         final String email = request.getParameter("email");
         final String password = request.getParameter("password");
@@ -62,7 +62,7 @@ public class Registration extends HttpServlet {
         }
 
         //Add new user
-        User sessionUser = userDao.addNew(email, password, first_name, last_name).get();
+        User sessionUser = userDao.addUser(email, password, first_name, last_name).get();
         log.info(String.format("User \"%s\" successfully registered", email));
         session.setUser(sessionUser);
         response.sendRedirect("/profile?id=" + sessionUser.getId());

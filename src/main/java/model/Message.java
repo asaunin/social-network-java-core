@@ -7,12 +7,6 @@ import lombok.extern.log4j.Log4j;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-
 
 @Log4j
 @Data
@@ -23,7 +17,6 @@ public class Message implements Serializable {
     private User sender;
     private User recipient;
     private String body;
-    private String formatted_date;
 
     public static Message from(MessageBean messageBean, User sender, User recipient) {
 
@@ -33,14 +26,6 @@ public class Message implements Serializable {
         message.body = messageBean.getBody();
         message.sender = sender;
         message.recipient = recipient;
-
-        //Message date formatting
-        LocalDateTime messageDate = message.date.toLocalDateTime();
-        LocalDateTime currentDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
-        if (messageDate.compareTo(currentDate) > 0)
-            message.formatted_date = messageDate.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
-        else
-            message.formatted_date = messageDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
 
         return message;
 

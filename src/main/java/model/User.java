@@ -1,12 +1,14 @@
 package model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
+@EqualsAndHashCode(exclude={"name", "isuserfriend", "isfriendofuser"})
 public class User implements Serializable{
 
     private long id;

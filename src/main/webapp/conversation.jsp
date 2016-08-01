@@ -4,6 +4,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="dot"%>
 <div class="container-fluid col-sm-12">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -28,7 +29,7 @@
                             <div class="chat-body clearfix">
                                 <div class="header">
                                     <strong class="primary-font">${message.sender.name}</strong>
-                                    <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> ${message.formatted_date} </small>
+                                    <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span> <dot:dateOrTime date="${message.date}"/> </small>
                                 </div>
                                 <div class="last-message text-muted">${message.body}</div>
                             </div>

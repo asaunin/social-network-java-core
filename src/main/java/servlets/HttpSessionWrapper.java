@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Locale;
 
+@FunctionalInterface
 public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSession {
 
     String LOCALE_NAME = "locale";
@@ -18,6 +19,12 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
     String NUMBER_OF_USER_PAGES = "numberOfUserPages";
     int USERS_PER_PAGE = 10;
 
+    /**
+     * Do not use.
+     * @return wrapped HttpSession
+     * @deprecated Instead of "from" method one can use lambda as follows: "request::getSession"
+     */
+    @Deprecated
     static HttpSessionWrapper from(HttpSession httpSession) {
         return () -> httpSession;
     }

@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,38 @@ public interface Dao {
     //SELECT * FROM pg_stat_activity; for active connections monitoring
 
     @Private
+    default int[] batch(String[] sqls) {
+
+        QueryRunner run = new QueryRunner();
+        int[] rows;
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            Statement statement = conn.createStatement();
+            Arrays.stream(sqls).
+                    forEach(s -> {
+                        try {
+                            statement.addBatch(s);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
+                        }
+
+                    });
+           rows = statement.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
+        }
+        return rows;
+
+    }
+
+    @Private
     default <T> Optional<T> select(Class<T> type, String sql, Object... values) {
 
         T bean = null;
@@ -36,7 +70,6 @@ public interface Dao {
             conn = getConnection();
             bean = run.query(conn, sql, rsh, values);
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(errorMessage, e);
             throw new RuntimeException(e);
         } finally {
@@ -58,7 +91,6 @@ public interface Dao {
             conn = getConnection();
             bean = run.query(conn, sql, rsh, values);
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(errorMessage, e);
             throw new RuntimeException(e);
         } finally {
@@ -78,9 +110,7 @@ public interface Dao {
         try {
             conn = getConnection();
             count = run.update(conn, sql, values);
-            DbUtils.closeQuietly(conn);
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(errorMessage, e);
             throw new RuntimeException(e);
         } finally {
@@ -101,9 +131,7 @@ public interface Dao {
         try {
             conn = getConnection();
             bean = run.insert(conn, sql, rsh, values);
-            DbUtils.closeQuietly(conn);
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(errorMessage, e);
             throw new RuntimeException(e);
         } finally {

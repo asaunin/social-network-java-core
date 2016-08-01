@@ -1,5 +1,6 @@
 package listeners;
 
+import dao.jdbc.FriendsDaoImpl;
 import dao.jdbc.MessageDaoImpl;
 import dao.jdbc.UserDaoImpl;
 import org.apache.log4j.BasicConfigurator;
@@ -21,6 +22,7 @@ public class Initializer implements ServletContextListener {
 
     public static final String USER_DAO = "userDao";
     public static final String MESSAGE_DAO = "messageDao";
+    public static final String FRIENDS_DAO = "friendsDao";
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
@@ -48,6 +50,7 @@ public class Initializer implements ServletContextListener {
         //Initialize DB Connection
         servletContext.setAttribute(USER_DAO, (UserDaoImpl) ds::getConnection);
         servletContext.setAttribute(MESSAGE_DAO, (MessageDaoImpl) ds::getConnection);
+        servletContext.setAttribute(FRIENDS_DAO, (FriendsDaoImpl) ds::getConnection);
 
     }
 

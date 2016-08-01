@@ -14,7 +14,7 @@ public class Logout  extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSession session = request.getSession();
+        final HttpSessionWrapper session = request::getSession;
         
         Cookie[] cookies = request.getCookies();
         if(cookies != null){
@@ -27,8 +27,8 @@ public class Logout  extends HttpServlet {
         }
 
         //Invalidate the session if exists
-        log.info("User \"" + HttpSessionWrapper.from(session).getUser() + "\" logout");
-        session.invalidate();
+        log.info("User \"" + session.getUser() + "\" logout");
+        request.getSession().invalidate();
         response.sendRedirect("login.jsp");
 
     }

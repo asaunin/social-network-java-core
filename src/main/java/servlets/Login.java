@@ -42,7 +42,7 @@ public class Login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         final String email = request.getParameter("email");
         final String password = request.getParameter("password");
 

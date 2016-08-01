@@ -1,0 +1,51 @@
+group 'ru.asaunin'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compile 'log4j:log4j:+'
+    compile 'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+'
+    compile 'org.glassfish.web:javax.servlet.jsp.jstl:+'
+    compile 'org.webjars:bootstrap:+'
+    compile 'commons-validator:commons-validator:+'
+
+
+    compile 'commons-dbutils:commons-dbutils:+'
+
+    compileOnly 'org.projectlombok:lombok:+'
+
+    providedCompile 'org.apache.tomcat:tomcat-api:+'
+    providedCompile 'org.apache.tomcat:tomcat-jsp-api:+'
+    providedCompile 'org.apache.tomcat:tomcat-catalina:+'
+
+    //For DB tests
+    compile 'org.apache.tomcat:tomcat-jdbc:+'
+    compile 'org.apache.tomcat:juli:+'
+    compile 'postgresql:postgresql:+'
+
+    testCompile 'junit:junit:+'
+
+//    compile 'javax.security.auth.message:javax.security.auth.message-api:+'
+//    compile 'org.apache.tomcat:tomcat-dbcp:+'
+
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'service.Loader'
+        )
+    }
+}
+

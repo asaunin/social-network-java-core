@@ -54,7 +54,7 @@ public class SecurityFilter implements HttpFilter {
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws
             IOException, ServletException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         final long TEST_USER_ID = 1L;
 
         request.setCharacterEncoding("UTF-8");

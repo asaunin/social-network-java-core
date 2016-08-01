@@ -13,7 +13,7 @@ public class Localisation extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession());
+        final HttpSessionWrapper session = request::getSession;
         session.setLocale(new Locale(request.getParameter(HttpSessionWrapper.LOCALE_NAME)));
         response.sendRedirect(request.getHeader("Referer"));
     }
