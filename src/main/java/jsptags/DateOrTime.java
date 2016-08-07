@@ -27,7 +27,7 @@ public class DateOrTime extends TagSupport {
         if (messageDate.compareTo(currentDate) > 0)
             formatted_date = messageDate.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT));
         else
-            formatted_date = messageDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+            formatted_date = messageDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
 
         try {
             pageContext.getOut().write(formatted_date);

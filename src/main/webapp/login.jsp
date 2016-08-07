@@ -1,18 +1,24 @@
+<%--@elvariable id="errorMessage" type="String"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<style type="text/css">
+    <%@include file="/css/chat.css"%>
+    <%@include file="/css/bootstrap.min.css"%>
+    <%@include file="/css/bootstrap-formhelpers.min.css"%>
+</style>
+<script>
+    <%@include file="/js/jquery.min.js"%>
+    <%@include file="/js/avatar.js"%>
+    <%@include file="/js/bootstrap.min.js"%>
+    <%@include file="/js/bootstrap-formhelpers.min.js"%>
+</script>
+
 <html>
 <head>
     <title>Login</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <fmt:setLocale value="${sessionScope.locale}"/>
@@ -24,7 +30,7 @@
 <fmt:message bundle="${loc}" key="local.input.password" var="password"/>
 <fmt:message bundle="${loc}" key="local.button.sign_in" var="sign_in"/>
 
-<body ng-app="">
+<body>
 <div class="container" style="margin-top:40px">
     <div class="row">
         <div class="col-sm-6 col-md-4 col-md-offset-4">
@@ -70,23 +76,8 @@
             </div>
         </div>
     </div>
+    <jsp:include page="localisation.jsp"/>
 </div>
-
-<div ng-include="'localisation.jsp'"></div>
-<!--<div class="text-center">
-    <form name="localisation" method="post">
-        <input type="hidden" name="locale">
-        <a href="#" onClick='newLocale("en")' class="label label-default">English</a>
-        <a href="#" onClick='newLocale("ru")' class="label label-default">Русский</a>
-    </form>
-</div>
-<script type="text/javascript">
-    function newLocale(locale){
-        document.forms.localisation.locale.value = locale;
-        document.forms.localisation.action="localisation";
-        document.forms.localisation.submit();
-    }
-</script>-->
 
 </body>
 </html>

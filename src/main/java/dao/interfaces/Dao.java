@@ -101,6 +101,26 @@ public interface Dao {
     }
 
     @Private
+    default int update(String sql, Object... values) {
+
+        int count = 0;
+        QueryRunner run = new QueryRunner();
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            count = run.update(conn, sql, values);
+        } catch (SQLException e) {
+            log.error(errorMessage, e);
+            throw new RuntimeException(e);
+        } finally {
+            DbUtils.closeQuietly(conn);
+        }
+        return count;
+
+    }
+
+    @Private
     default int delete(String sql, Object... values) {
 
         int count = 0;

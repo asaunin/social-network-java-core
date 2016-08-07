@@ -12,21 +12,21 @@
         <div class="panel-heading">
             <div class="pull-left" style="padding-top: 7px;">
                 <strong>
-                    Users
+                    Friends
                 </strong>
             </div>
             <div class="input-group input-group-sm">
-                <input type="text" name="usersSearchText" id="usersSearchText" class="form-control" placeholder="Search..."
+                <input type="text" name="friendsSearchText" id="friendsSearchText" class="form-control" placeholder="Search..."
                        value='${searchText}'
-                       style="width: 70%; float: right" onchange="searchFriend('users')">
+                       style="width: 70%; float: right" onchange="searchFriend('friends')">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" onclick="searchFriend('users')">
+                        <button class="btn btn-default" type="button" onclick="searchFriend('friends')">
                             <span class="glyphicon glyphicon-search"></span>
                         </button>
                     </span>
             </div>
         </div>
-        <form action="/main" method="get" id="userList" role="form">
+        <form action="/main" method="get" id="friendsList" role="form">
             <table class="table table-hover">
                 <c:forEach var="user_profile" items="${userList}">
                     <tr>
@@ -69,7 +69,7 @@
         <ul class="pagination">
             <c:forEach var="userPage" begin="1" end="${numberOfUserPages}">
                 <li<c:if test="${currentUserPage==userPage}"> class="active"</c:if>>
-                    <a href="users?userPage=${userPage}">${userPage}</a>
+                    <a href="friends?userPage=${userPage}">${userPage}</a>
                 </li>
             </c:forEach>
         </ul>

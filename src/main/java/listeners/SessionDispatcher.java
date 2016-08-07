@@ -3,9 +3,11 @@ package listeners;
 import dao.interfaces.FriendsDao;
 import dao.interfaces.MessageDao;
 import dao.interfaces.UserDao;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import model.Message;
 import model.User;
+import service.Validator;
 import servlets.HttpSessionWrapper;
 
 import javax.servlet.ServletConfig;
@@ -15,8 +17,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+
+import static service.Validator.*;
+import static servlets.HttpSessionWrapper.RECORDS_PER_PAGE;
+import static servlets.HttpSessionWrapper.from;
 
 @Log4j
 @WebServlet("/")
@@ -25,6 +36,49 @@ public class SessionDispatcher extends HttpServlet {
     private UserDao userDao;
     private MessageDao messageDao;
     private FriendsDao friendsDao;
+
+    private enum Action {
+
+        ACTION_VIEW_CONTACT("contact"),
+        ACTION_VIEW_CONVERSATION("conversation"),
+        ACTION_VIEW_MESSAGES("messages"),
+        ACTION_VIEW_PROFILE("profile"),
+        ACTION_VIEW_USERLIST("users"),
+        ACTION_VIEW_FRIENDLIST("friends"),
+        ACTION_ADD_FRIEND("addFriend"),
+        ACTION_SEND_MESSAGE("sendMessage"),
+        ACTION_REMOVE_FRIEND("removeFriend"),
+        ACTION_CHANGE_CONTACT("changeContact"),
+        ACTION_CHANGE_PASSWORD("changePassword"),
+        ACTION_NOT_DEFINED("");
+
+        @Getter
+        private String text;
+
+        Action(String text) {
+            this.text = text;
+        }
+
+        @Override
+        public String toString() {
+            return this.getText();
+        }
+
+        public static Action of(String value) {
+            for (Action v : values())
+                if (v.getText().equalsIgnoreCase(value)) return v;
+            return ACTION_NOT_DEFINED;
+        }
+
+        private static boolean profileNeeded(Action action) {
+            return action == ACTION_VIEW_PROFILE
+                    || action == ACTION_VIEW_CONVERSATION
+                    || action == ACTION_SEND_MESSAGE
+                    || action == ACTION_ADD_FRIEND
+                    || action == ACTION_REMOVE_FRIEND;
+        }
+
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -37,79 +91,91 @@ public class SessionDispatcher extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession(false));
+        final HttpSessionWrapper session = from(request.getSession(false));
         final String path = request.getServletPath();
-        final String action = path.substring(1);
+        final Action action = Action.of(path.substring(1));
 
-        final String profileId = request.getParameter("id");
-        final String userPage = request.getParameter("userPage");
-        final int responseCode;
+        //Check and set session profile if needed. It might be used later
+        final int responseCode = setProfileIfNeeded(session, action, request.getParameter("id"));
+        if (responseCode != HttpServletResponse.SC_OK) {
+            response.sendError(responseCode);
+            return;
+        }
 
         switch (action) {
 
-            case "profile":
-                responseCode = setProfile(session, profileId);
+            case ACTION_VIEW_CONTACT:
                 break;
 
-            case "users":
-                responseCode = viewUserList(session, userPage);
+            case ACTION_VIEW_CONVERSATION:
+                viewConversation(session);
                 break;
 
-            case "conversation":
-                responseCode = viewConversation(session, profileId);
+            case ACTION_VIEW_MESSAGES:
+                viewMessages(session);
                 break;
 
-            case "messages":
-                responseCode = viewMessages(session);
+            case ACTION_VIEW_PROFILE:
+                break;
+
+            case ACTION_VIEW_USERLIST:
+                viewUserList(session, false, request.getParameter("userPage"), request.getParameter("searchText"));
+                break;
+
+            case ACTION_VIEW_FRIENDLIST:
+                viewUserList(session, true, request.getParameter("userPage"), request.getParameter("searchText"));
                 break;
 
             default:
-                return;
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                break;
 
         }
 
-        if (responseCode != HttpServletResponse.SC_OK) {
-            response.sendError(responseCode);
-        } else {
-            session.setCurrentTab(action);
-            getServletContext().getRequestDispatcher("/main.jsp").forward(request, response);
-        }
+        session.setCurrentTab(action.getText());
+        getServletContext().getRequestDispatcher("/main.jsp").forward(request, response);
 
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final HttpSessionWrapper session = HttpSessionWrapper.from(request.getSession(false));
+        final HttpSessionWrapper session = from(request.getSession(false));
         final String path = request.getServletPath();
-        final String action = path.substring(1);
+        final Action action = Action.of(request.getParameter("action"));
+        final String errorMessage;
 
-        final String profileId = request.getParameter("id");
-        final String messageBody = request.getParameter("messageBody");
-
-        //Check if profile id is not correct
-        final Optional<User> profile = getProfile(profileId);
-        if (!profile.isPresent()) {
-            log.warn(String.format("For action \"%s\" user \"%s\" not found", action, profileId));
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        //Check and set session profile if needed. It might be used later
+        final int responseCode = setProfileIfNeeded(session, action, request.getParameter("id"));
+        if (responseCode != HttpServletResponse.SC_OK) {
+            response.sendError(responseCode);
             return;
         }
 
         switch (action) {
 
-            case "sendMessage":
-                messageDao.addNew(session.getUser(), profile.get(), messageBody.replaceAll("\r\n", "<br>"));
+            case ACTION_ADD_FRIEND:
+                addFriend(session);
                 break;
 
-            case "addFriend":
-                friendsDao.addFriend(session.getUser(), profile.get());
+            case ACTION_CHANGE_CONTACT:
+                changeContact(session, request, response);
+                return;
+
+            case ACTION_CHANGE_PASSWORD:
+                changePassword(session, request, response);
+                return;
+
+            case ACTION_REMOVE_FRIEND:
+                removeFriend(session);
                 break;
 
-            case "removeFriend":
-                friendsDao.removeFriend(session.getUser(), profile.get());
+            case ACTION_SEND_MESSAGE:
+                sendMessage(session, request.getParameter("messageBody"));
                 break;
 
             default:
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
 
         }
@@ -118,32 +184,54 @@ public class SessionDispatcher extends HttpServlet {
 
     }
 
-    private Optional<User> getProfile(String profileId) {
+    private int setProfileIfNeeded(HttpSessionWrapper session, Action action, String profileId) {
 
-        final long id = Optional.ofNullable(profileId)
-                .map(Long::parseLong)
-                .orElse(0L);
+        final Optional<User> profile;
 
-        return userDao.getById(id);
+        if (Action.profileNeeded(action)) {
+
+            final long id = Optional.ofNullable(profileId)
+                    .map(Long::parseLong)
+                    .orElse(0L);
+
+            if (action == Action.ACTION_VIEW_PROFILE)
+                profile = userDao.getUserById(id, session.getUser().getId());
+            else
+                profile = userDao.getUserById(id);
+
+            if (profile.isPresent()) {
+                session.setProfile(profile.get());
+            } else {
+                log.warn(String.format("For action \"\"%s\" user \"%s\" not found", action.getText(), profileId));
+                return HttpServletResponse.SC_NOT_FOUND;
+            }
+
+        }
+
+        return HttpServletResponse.SC_OK;
 
     }
 
-    private Optional<User> getProfile(String profileId, long userId) {
-
-        final long id = Optional.ofNullable(profileId)
-                .map(Long::parseLong)
-                .orElse(0L);
-
-        return friendsDao.getById(id, userId);
-
+    private void viewConversation(HttpSessionWrapper session) {
+        List<Message> messageList = messageDao.getAll(session.getUser(), session.getProfile());
+        session.setmessageList(messageList);
     }
 
-    private int viewUserList(HttpSessionWrapper session, String userPage) {
+    private void viewMessages(HttpSessionWrapper session) {
+        List<Message> messageList = messageDao.getLast(session.getUser());
+        session.setmessageList(messageList);
+    }
+
+    private void viewUserList(HttpSessionWrapper session, boolean onlyFriends, String userPage, String searchText) {
 
         final User user = session.getUser();
         final int numberOfPages;
-        final List<User> profilesList;
-        final long numberOfUsers = userDao.getNumberOfUsers() - 1; //Exclude current user
+        final List<User> userList;
+        final long numberOfUsers;
+        if (onlyFriends)
+            numberOfUsers = friendsDao.getNumberOfFriends(user, searchText);
+        else
+            numberOfUsers = userDao.getNumberOfUsers(user.getId(), searchText);
 
         int page;
         try {
@@ -156,7 +244,7 @@ public class SessionDispatcher extends HttpServlet {
         if (numberOfUsers > Integer.MAX_VALUE)
             numberOfPages = 10;
         else
-            numberOfPages = (int) Math.ceil((double) numberOfUsers / HttpSessionWrapper.USERS_PER_PAGE);
+            numberOfPages = (int) Math.ceil((double) numberOfUsers / RECORDS_PER_PAGE);
         session.setNumberOfUserPages(numberOfPages);
 
         if (page > numberOfPages || page < 1)
@@ -164,45 +252,117 @@ public class SessionDispatcher extends HttpServlet {
         else
             session.setCurrentUserPage(page);
 
-        profilesList = userDao.getList(user, HttpSessionWrapper.USERS_PER_PAGE, (page-1) * HttpSessionWrapper.USERS_PER_PAGE, "");
-        session.setProfilesList(profilesList);
-        return HttpServletResponse.SC_OK;
+        if (onlyFriends)
+            userList = friendsDao.getFriendList(user, RECORDS_PER_PAGE, (page - 1) * RECORDS_PER_PAGE, searchText);
+        else
+            userList = userDao.getUserList(user, RECORDS_PER_PAGE, (page - 1) * RECORDS_PER_PAGE, searchText);
+
+        session.setSearchText(searchText);
+        session.setUserList(userList);
 
     }
 
-    private int viewConversation(HttpSessionWrapper session, String profileId) {
+    private void addFriend(HttpSessionWrapper session) {
+        friendsDao.addFriend(session.getUser(), session.getProfile());
+    }
 
-        final Optional<User> profile = getProfile(profileId);
-        if (profile.isPresent()) {
-            session.setProfile(profile.get());
-            List<Message> messageList = messageDao.getAll(session.getUser(), profile.get());
-            session.setMessagesList(messageList);
-            return HttpServletResponse.SC_OK;
-        } else {
-            log.warn(String.format("For action \"conversation\" user \"%s\" not found", profileId));
-            return HttpServletResponse.SC_BAD_REQUEST;
+    private void changeContact(HttpSessionWrapper session, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        final String email = request.getParameter("email");
+        final String first_name = request.getParameter("first_name");
+        final String last_name = request.getParameter("last_name");
+        final String phone = request.getParameter("phone");
+        final String str_birth_date = request.getParameter("birth_date");
+        final String sex = request.getParameter("sex");
+        final User user = new User(session.getUser());
+
+        //Create user with new contact information
+        user.setEmail(email);
+        user.setFirst_name(first_name);
+        user.setLast_name(last_name);
+        user.setPhone(phone);
+        user.setSex(sex);
+        try {
+            final DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+            final java.util.Date date = format.parse(str_birth_date);
+            final Date birth_date = new Date(date.getTime());
+            user.setBirth_date(birth_date);
+        } catch (IllegalArgumentException | ParseException e) {
+            log.warn(String.format("Update contact. User \"%s\" date \"%s\" is invalid", session.getUser().getId(), str_birth_date));
         }
 
-    }
-
-    private int viewMessages(HttpSessionWrapper session) {
-
-        List<Message> messageList = messageDao.getLast(session.getUser());
-        session.setMessagesList(messageList);
-        return HttpServletResponse.SC_OK;
-
-    }
-
-    private int setProfile(HttpSessionWrapper session, String profileId) {
-
-        final Optional<User> profile = getProfile(profileId, session.getUser().getId());
-        if (profile.isPresent()) {
-            session.setProfile(profile.get());
-            return HttpServletResponse.SC_OK;
-        } else {
-            log.warn(String.format("For action \"profile\" user \"%s\" not found", profileId));
-            return HttpServletResponse.SC_BAD_REQUEST;
+        //Check if data not changed
+        if (user.equals(session.getUser())) { // TODO: 07.08.2016 Почему-то не работает 
+            request.getRequestDispatcher("/main.jsp").forward(request, response);
+            return;
         }
+
+        //Validate input parameters
+        ValidationCode validationCode = validateContact(email, first_name, last_name);
+
+        //Check if email changed
+        if (Validator.isValidCode(validationCode))
+            if (!email.equals(session.getUser().getEmail())) {
+                final Optional<User> findUser = userDao.getUserByEmail(email);
+                if (findUser.isPresent())
+                    validationCode = ValidationCode.DUPLICATED_REGISTRATION;
+            }
+
+        //Update user information
+        if (Validator.isValidCode(validationCode)) {
+            userDao.updateUser(user);
+            session.setUser(user);
+            if (session.hasProfile() && session.getProfile().getId() == user.getId())
+                session.setProfile(user);
+        }
+
+        showValidationMessage(validationCode, session.getLocale(), "changeContactMessage", request, response);
+
+    }
+
+    private void changePassword(HttpSessionWrapper session, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        final String old_password = request.getParameter("old_password");
+        final String password = request.getParameter("password");
+        final String confirm_password = request.getParameter("confirm_password");
+
+        //Validate input parameters
+        ValidationCode validationCode = validatePasswordChange(old_password, password, confirm_password, session.getLocale());
+
+        //Check if old password is correct
+        if (Validator.isValidCode(validationCode)) {
+            final Optional<User> user = userDao.getUserByEmailPassword(session.getUser().getEmail(), old_password);
+            if (!user.isPresent())
+                validationCode = ValidationCode.PASS_INCORRECT;
+            else
+                userDao.changePassword(user.get(), password);
+        }
+
+        showValidationMessage(validationCode, session.getLocale(), "changePasswordMessage", request, response);
+
+    }
+
+    private void removeFriend(HttpSessionWrapper session) {
+        friendsDao.removeFriend(session.getUser(), session.getProfile());
+    }
+
+    private void sendMessage(HttpSessionWrapper session, String messageBody) {
+        messageDao.addNew(session.getUser(), session.getProfile(), messageBody.replaceAll("\r\n", "<br>"));
+    }
+
+    private void showValidationMessage(ValidationCode validationCode, Locale locale, String fieldName, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        final String message = Validator.getMessage(validationCode, locale);
+
+        request.setAttribute(fieldName, message);
+        if (Validator.isValidCode(validationCode)) {
+            log.info(message);
+            request.setAttribute("alertType", "alert-success");
+        } else {
+            log.warn(message);
+            request.setAttribute("alertType", "alert-danger");
+        }
+        request.getRequestDispatcher("/main.jsp").forward(request, response);
 
     }
 

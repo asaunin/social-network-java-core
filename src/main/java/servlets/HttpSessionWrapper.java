@@ -13,11 +13,15 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
 
     String LOCALE_NAME = "locale";
     String USER_NAME = "user";
+    String USER_LIST = "userList";
+    String MESSAGE_LIST = "messageList";
     String PROFILE_NAME = "profile";
     String CURRENT_USER_PAGE = "currentUserPage";
     String CURRENT_TAB = "currentTab";
     String NUMBER_OF_USER_PAGES = "numberOfUserPages";
-    int USERS_PER_PAGE = 10;
+    String SEARCH_TEXT = "searchText";
+
+    int RECORDS_PER_PAGE = 10;
 
     static HttpSessionWrapper from(HttpSession httpSession) {
         return (httpSession == null) ? null : () -> httpSession;
@@ -80,12 +84,23 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
         toSrc().setAttribute(CURRENT_TAB, currentTab);
     }
 
-    default void setProfilesList(List<User> profilesList) {
-        toSrc().setAttribute("profilesList", profilesList);
+    default void setUserList(List<User> userList) {
+        toSrc().setAttribute(USER_LIST, userList);
     }
 
-    default void setMessagesList(List<Message> messagesList) {
-        toSrc().setAttribute("messagesList", messagesList);
+    default void setmessageList(List<Message> messageList) {
+        toSrc().setAttribute(MESSAGE_LIST, messageList);
     }
+
+    default String getSearchText() {
+        final Object searchText = toSrc().getAttribute(SEARCH_TEXT);
+        if (searchText==null)
+            return "";
+        else
+            return (String) toSrc().getAttribute(SEARCH_TEXT);
+    }
+
+    default void setSearchText(String searchText) { toSrc().setAttribute(SEARCH_TEXT, searchText); }
+
 }
 

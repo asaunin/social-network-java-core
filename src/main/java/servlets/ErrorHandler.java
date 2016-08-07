@@ -44,7 +44,7 @@ public class ErrorHandler extends HttpServlet{
         PrintWriter out = response.getWriter();
         if (statusCode == 404) {
             out.write("<html><head><title>404 Not Found</title></head><body>");
-            out.write("<body style=\"background: #3f5d81 url(https://vk.com/images/error404.png) no-repeat 50% 50%; width: 100%; height: 100%; overflow: hidden; margin: 0px;\">");
+            out.write("<body style=\"background: #3f5d81 url(img/error404.png) no-repeat 50% 50%; width: 100%; height: 100%; overflow: hidden; margin: 0px;\">");
             out.write("<a style=\"position: absolute; left: 50%; top: 50%; margin: -265px -345px 0px; height: 530px; width: 690px;\" href=\"https://vk.com/\"></a>");
         } else if (statusCode != 500) {
             out.write("<html><head><title>Error Details</title></head><body>");

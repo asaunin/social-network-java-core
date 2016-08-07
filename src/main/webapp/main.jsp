@@ -1,28 +1,40 @@
 <%--@elvariable id="user" type="model.User"--%>
+<%--@elvariable id="currentTab" type="int"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <style type="text/css">
     <%@include file="/css/chat.css"%>
+    <%@include file="/css/bootstrap.min.css"%>
+    <%@include file="/css/bootstrap-formhelpers.min.css"%>
 </style>
 <script>
+    <%@include file="/js/jquery.min.js"%>
     <%@include file="/js/avatar.js"%>
+    <%@include file="/js/bootstrap.min.js"%>
+    <%@include file="/js/bootstrap-formhelpers.min.js"%>
 </script>
 
 <html>
 <head>
     <title>BenthMates</title>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css">-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <!--    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/js/bootstrap-formhelpers.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-formhelpers/2.3.0/css/bootstrap-formhelpers.min.css">-->
+
 </head>
+
+<script>app.use(express.static('public'));</script>
+
 
 <body id="body">
 
@@ -40,11 +52,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Benchmates</a>
+                <a class="navbar-brand" href="">Benchmates</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
+                    <li><a href="/contact"><span class="glyphicon glyphicon-user"></span> My profile</a></li>
                     <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                 </ul>
             </div>
@@ -53,13 +65,16 @@
     <div class="row content">
         <div class="col-sm-2">
             <div class="well">
-                <img class="img-rounded img-responsive center-block" alt="user_pic" src="http://vk.com/images/deactivated_200.gif">
+                <img class="img-rounded img-responsive center-block" alt="user_pic" src="/img/deactivated_200.gif">
             </div>
             <div class="well" id="tabs">
                 <form action="/logout" method="get">
                     <ul class="nav nav-pills nav-stacked">
-                        <li<c:if test="${currentTab=='profile'}"> class="active"</c:if>>
+                        <li<c:if test="${currentTab=='profile' || currentTab=='contact'}"> class="active"</c:if>>
                             <a href="profile?id=${user.id}">Profile</a>
+                        </li>
+                        <li<c:if test="${currentTab=='friends'}"> class="active"</c:if>>
+                            <a href="friends">Friends</a>
                         </li>
                         <li<c:if test="${currentTab=='users'}"> class="active"</c:if>>
                             <a href="users">Users</a>
@@ -76,6 +91,9 @@
                 <div class="tab-pane fade<c:if test="${currentTab=='profile'}"> in active</c:if>" id="profile">
                     <jsp:include page="profile.jsp"/>
                 </div>
+                <div class="tab-pane fade<c:if test="${currentTab=='friends'}"> in active</c:if>" id="friends">
+                    <jsp:include page="friends.jsp"/>
+                </div>
                 <div class="tab-pane fade<c:if test="${currentTab=='users'}"> in active</c:if>" id="users">
                     <jsp:include page="users.jsp"/>
                 </div>
@@ -84,6 +102,9 @@
                 </div>
                 <div class="tab-pane fade<c:if test="${currentTab=='messages'}"> in active</c:if>" id="messages">
                     <jsp:include page="messages.jsp"/>
+                </div>
+                <div class="tab-pane fade<c:if test="${currentTab=='contact'}"> in active</c:if>" id="contact">
+                    <jsp:include page="contact.jsp"/>
                 </div>
             </div>
         </div>
@@ -94,22 +115,61 @@
     </div>
 </div>
 
-<!--<script>
-    $(document).ready(function(){
-        $(".nav-pills a").click(function(){
-            //$(this).tab('show');
-            //alert($(this).attr('id'));
-            //$.post($(this).attr('id'), { name:"Donald", town:"Ducktown" });
-            $.ajax({
-                url : $(this).attr('id'),
-                type: 'get',
-                data : {
-                    userName : 'fhdh'
-               }
-            });
-        });
-    });
-</script>-->
-
 </body>
 </html>
+
+<script>
+    <!--Need to be replaced as injections for success functions-->
+    function searchFriend(currentTab) {
+        var searchText;
+        if (currentTab=='friends')
+            searchText = $('input[name="friendsSearchText"]').val();
+        else
+            searchText = $('input[name="usersSearchText"]').val();
+        $.ajax({
+            url: '/' + currentTab,
+            type: 'get',
+            data: {
+                searchText: searchText
+            },
+            success: function (data) {
+                $('body').html(data);
+            },
+            error: function (xhr) {
+                $("#maincont").html(xhr.responseText);
+            }
+        });
+    }
+    function addFriend(id) {
+        $.ajax({
+            url: '/users',
+            type: 'post',
+            data: {
+                id: id,
+                action: "addFriend"
+            },
+            success: function (data) {
+                $('body').html(data);
+            },
+            error: function (xhr) {
+                $("#maincont").html(xhr.responseText);
+            }
+        });
+    }
+    function removeFriend(id) {
+        $.ajax({
+            url: '/users',
+            type: 'post',
+            data: {
+                id: id,
+                action: "removeFriend"
+            },
+            success: function (data) {
+                $('body').html(data);
+            },
+            error: function (xhr) {
+                $("#maincont").html(xhr.responseText);
+            }
+        });
+    }
+</script>

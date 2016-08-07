@@ -7,7 +7,8 @@ import java.util.Locale;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static service.Validator.ErrorMessage;
+import static service.Validator.*;
+import static service.Validator.ValidationCode;
 
 public class ValidatorTest {
 
@@ -41,45 +42,57 @@ public class ValidatorTest {
     @Test
     public void getMessageTest() throws Exception {
 
-        assertThat(Validator.getMessage(ErrorMessage.USER_NOT_FOUND, new Locale("ru")),
+        assertThat(getMessage(ValidationCode.USER_NOT_FOUND, new Locale("ru")),
                 is(USER_NOT_FOUND_RU));
-        assertThat(Validator.getMessage(ErrorMessage.USER_NOT_FOUND, Locale.ENGLISH),
+        assertThat(getMessage(ValidationCode.USER_NOT_FOUND, Locale.ENGLISH),
                 is(USER_NOT_FOUND));
-        assertThat(Validator.getMessage(ErrorMessage.USER_NOT_FOUND, Locale.GERMAN),
-                is(Validator.getMessage(ErrorMessage.USER_NOT_FOUND, Locale.getDefault())));
-        assertThat(Validator.getMessage(ErrorMessage.REGISTRATION, Locale.GERMAN),
-                is(Validator.getMessage(ErrorMessage.REGISTRATION, Locale.getDefault())));
+        assertThat(getMessage(ValidationCode.USER_NOT_FOUND, Locale.GERMAN),
+                is(getMessage(ValidationCode.USER_NOT_FOUND, Locale.getDefault())));
+        assertThat(getMessage(ValidationCode.REGISTRATION, Locale.GERMAN),
+                is(getMessage(ValidationCode.REGISTRATION, Locale.getDefault())));
 
     }
 
     @Test
     public void validateLoginTest() throws Exception {
 
-        assertThat(Validator.validateLogin(INVALID_EMAIL, VALID_PASSWORD, locale),
-                is(Validator.getMessage(ErrorMessage.EMAIL_NOT_VALID, locale)));
-        assertThat(Validator.validateLogin(VALID_EMAIL, INVALID_PASSWORD, locale),
-                is(Validator.getMessage(ErrorMessage.PASS_NOT_VALID, locale)));
-        assertThat(Validator.validateLogin(VALID_EMAIL, VALID_PASSWORD, locale),
-                is(""));
+        assertThat(validateLogin(INVALID_EMAIL, VALID_PASSWORD),
+                is(ValidationCode.EMAIL_NOT_VALID));
+        assertThat(validateLogin(VALID_EMAIL, INVALID_PASSWORD),
+                is(ValidationCode.PASS_NOT_VALID));
+        assertThat(validateLogin(VALID_EMAIL, VALID_PASSWORD),
+                is(ValidationCode.LOGIN_SUCCESS));
 
     }
 
     @Test
     public void validateRegistrationTest() throws Exception {
 
-        assertThat(Validator.validateRegistration(INVALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME, locale),
-                is(Validator.getMessage(ErrorMessage.EMAIL_NOT_VALID, locale)));
-        assertThat(Validator.validateRegistration(VALID_EMAIL, INVALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME, locale),
-                is(Validator.getMessage(ErrorMessage.PASS_NOT_VALID, locale)));
-        assertThat(Validator.validateRegistration(VALID_EMAIL, VALID_PASSWORD, ANOTHER_VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME, locale),
-                is(Validator.getMessage(ErrorMessage.PASS_DIFFERS, locale)));
-        assertThat(Validator.validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, INVALID_NAME, VALID_LAST_NAME, locale),
-                is(Validator.getMessage(ErrorMessage.NAME_NOT_VALID, locale)));
-        assertThat(Validator.validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, INVALID_NAME, locale),
-                is(Validator.getMessage(ErrorMessage.NAME_NOT_VALID, locale)));
-        assertThat(Validator.validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME, locale),
-                is(""));
+        assertThat(validateRegistration(INVALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.EMAIL_NOT_VALID));
+        assertThat(validateRegistration(VALID_EMAIL, INVALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.PASS_NOT_VALID));
+        assertThat(validateRegistration(VALID_EMAIL, VALID_PASSWORD, ANOTHER_VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.PASS_DIFFERS));
+        assertThat(validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, INVALID_NAME, VALID_LAST_NAME),
+                is(ValidationCode.NAME_NOT_VALID));
+        assertThat(validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, INVALID_NAME),
+                is(ValidationCode.NAME_NOT_VALID));
+        assertThat(validateRegistration(VALID_EMAIL, VALID_PASSWORD, VALID_PASSWORD, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.REGISTRATION_SUCCESS));
 
     }
 
+    @Test
+    public void validatePasswordChangeTest() throws Exception {
+        assertThat(validatePasswordChange(VALID_PASSWORD, VALID_PASSWORD, VALID_PASSWORD, locale),
+                is(ValidationCode.PASS_NOT_CHANGED));
+        assertThat(validatePasswordChange(VALID_PASSWORD, INVALID_PASSWORD, VALID_PASSWORD, locale),
+                is(ValidationCode.PASS_NOT_VALID));
+        assertThat(validatePasswordChange(ANOTHER_VALID_PASSWORD, VALID_PASSWORD, ANOTHER_VALID_PASSWORD, locale),
+                is(ValidationCode.PASS_DIFFERS));
+        assertThat(validatePasswordChange(VALID_PASSWORD, ANOTHER_VALID_PASSWORD, ANOTHER_VALID_PASSWORD, locale),
+                is(ValidationCode.PASS_CHANGED_SUCCESS));
+
+    }
 }

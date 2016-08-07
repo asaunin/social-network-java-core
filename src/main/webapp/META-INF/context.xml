@@ -13,9 +13,4 @@
               driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://localhost:5432/test"/>
 
-    <session-config>
-        <session-timeout>15</session-timeout>
-    </session-config>
-
-
 </Context>

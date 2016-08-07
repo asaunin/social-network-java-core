@@ -4,7 +4,6 @@ import dao.interfaces.UserDao;
 import listeners.Initializer;
 import lombok.extern.log4j.Log4j;
 import model.User;
-import service.Validator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static service.Validator.*;
+
 @Log4j
 @WebServlet("/login")
 public class Login extends HttpServlet {
@@ -24,12 +25,6 @@ public class Login extends HttpServlet {
     // TODO: 14.07.2016 Тестирование под нагрузкой Curla
 
     private UserDao userDao;
-
-    private void error(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.warn(errorMessage);
-        request.setAttribute("errorMessage", errorMessage);
-        request.getRequestDispatcher("/login.jsp").forward(request, response);
-    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -45,21 +40,21 @@ public class Login extends HttpServlet {
         final String password = request.getParameter("password");
 
         //Validate input parameters
-        String errorMessage = Validator.validateLogin(email, password, session.getLocale());
-        if (!errorMessage.isEmpty()) {
-            error(errorMessage, request, response);
+        ValidationCode validationCode = validateLogin(email, password);
+        if (!isValidCode(validationCode)) {
+            showError(getMessage(validationCode, session.getLocale()), request, response);
             return;
         }
 
         //Check if login is correct
-        Optional<User> user = userDao.getByEmailPassword(email, password);
+        Optional<User> user = userDao.getUserByEmailPassword(email, password);
         if (!user.isPresent()) {
-            user = userDao.getByEmail(email);
+            user = userDao.getUserByEmail(email);
             if (!user.isPresent())
-                errorMessage = Validator.getMessage(Validator.ErrorMessage.USER_NOT_FOUND, session.getLocale());
+                validationCode = ValidationCode.USER_NOT_FOUND;
             else
-                errorMessage = Validator.getMessage(Validator.ErrorMessage.PASS_INCORRECT, session.getLocale());
-            error(errorMessage, request, response);
+                validationCode = ValidationCode.PASS_INCORRECT;
+            showError(getMessage(validationCode, session.getLocale()), request, response);
         } else {
             User sessionUser = user.get();
             log.info(String.format("Login \"%s\" successful", email));
@@ -72,6 +67,12 @@ public class Login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doPost(request, response);
+    }
+
+    private void showError(String errorMessage, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.warn(errorMessage);
+        request.setAttribute("errorMessage", errorMessage);
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
 }

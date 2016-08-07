@@ -1,6 +1,6 @@
 <%--@elvariable id="profile" type="model.User"--%>
 <%--@elvariable id="user" type="model.User"--%>
-<%--@elvariable id="messagesList" type="java.util.List<model.Message>"--%>
+<%--@elvariable id="messageList" type="java.util.List<model.Message>"--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -13,7 +13,7 @@
         <div class="panel-body" id="chat" style="max-height: 65%; min-height: 65%; overflow-y: auto;">
             <div class="chat-message">
                 <ul class="chat" style="padding: 0; list-style-type: none">
-                    <c:forEach var="message" items="${messagesList}">
+                    <c:forEach var="message" items="${messageList}">
                         <c:choose>
                             <c:when test="${message.sender==user}">
                                 <c:set var="alignment" value="left" scope="page"/>
@@ -39,12 +39,12 @@
             </div>
         </div>
         <div class="panel-footer">
-            <form action ="sendMessage" method="post" id="conversationForm" role="form">
+            <form action ="/conversation" method="post" id="conversationForm" role="form">
                 <div class="form-group">
                     <textarea class="form-control" rows="3" required maxlength="255" id="messageBody" name="messageBody"></textarea>
                 </div>
-                <input type="submit" class="btn btn-primary" value="Send" id="sendMessage">
                 <input type="hidden" name="id" value=${profile.id}>
+                <button type="submit" class="btn btn-primary" name="action" value="sendMessage">Send</button>
             </form>
         </div>
     </div>

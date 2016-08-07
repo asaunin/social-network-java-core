@@ -75,11 +75,11 @@ public class UserDaoImplTest {
      */
     @Before
     public void addUserTest() {
-        assertThat(userDao.getNumberOfUsers(), is(0L));
+        assertThat(userDao.getNumberOfUsers(0L), is(0L));
         final Optional<User> user = userDao.addUser(USER_EMAIL, USER_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME);
         assertThat(user.isPresent(), is(true));
         testUser = user.get();
-        assertThat(userDao.getNumberOfUsers(), is(1L));
+        assertThat(userDao.getNumberOfUsers(0L), is(1L));
     }
 
     /**
@@ -88,19 +88,19 @@ public class UserDaoImplTest {
      */
     @After
     public void removeUserTest() {
-        assertThat(userDao.getNumberOfUsers(), is(1L));
+        assertThat(userDao.getNumberOfUsers(0L), is(1L));
         userDao.removeUser(testUser);
-        assertThat(userDao.getNumberOfUsers(), is(0L));
+        assertThat(userDao.getNumberOfUsers(0L), is(0L));
     }
 
     @Test
     public void getNumberOfUsersTest() {
-        assertThat(userDao.getNumberOfUsers(), is(1L));
+        assertThat(userDao.getNumberOfUsers(0L), is(1L));
     }
 
     @Test
     public void getByIdTest() {
-        final Optional<User> userById = userDao.getById(testUser.getId());
+        final Optional<User> userById = userDao.getUserById(testUser.getId());
         assertThat(userById.isPresent(), is(true));
         assertThat(userById.get().equals(testUser), is(true));
         assertThat(userById.get().getName(), is("John Doe"));
@@ -108,21 +108,21 @@ public class UserDaoImplTest {
 
     @Test
     public void getByEmailTest() {
-        final Optional<User> userById = userDao.getByEmail(USER_EMAIL);
+        final Optional<User> userById = userDao.getUserByEmail(USER_EMAIL);
         assertThat(userById.isPresent(), is(true));
         assertThat(userById.get().equals(testUser), is(true));
     }
 
     @Test
     public void getByEmailPasswordTest() {
-        final Optional<User> userById = userDao.getByEmailPassword(USER_EMAIL, USER_PASSWORD);
+        final Optional<User> userById = userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD);
         assertThat(userById.isPresent(), is(true));
         assertThat(userById.get().equals(testUser), is(true));
     }
 
     @Test
     public void getListTest() {
-        final List<User> list = userDao.getList(testUser, 10, 0, "");
+        final List<User> list = userDao.getUserList(testUser, 10, 0, "");
         assertThat(list.size(), is(1));
         assertThat(list.get(0).equals(testUser), is(true));
     }

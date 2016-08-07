@@ -32,8 +32,8 @@ public class Message implements Serializable {
     }
 
     public static Message from(MessageBean messageBean, UserDaoImpl userDao) {
-        User sender = userDao.getById(messageBean.getSender()).get();
-        User recipient = userDao.getById(messageBean.getRecipient()).get();
+        User sender = userDao.getUserById(messageBean.getSender()).get();
+        User recipient = userDao.getUserById(messageBean.getRecipient()).get();
         return from(messageBean, sender, recipient);
     }
 

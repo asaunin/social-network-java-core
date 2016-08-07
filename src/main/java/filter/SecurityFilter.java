@@ -27,7 +27,7 @@ public class SecurityFilter implements HttpFilter {
                                     "/logout",
                                     "/registration"};
 
-    private final String[] extensions = {".ico"};
+    private final String[] extensions = {".ico, .ttf, .woff, .woff2, .svg"};
 
     private boolean isAllowedUri(HttpServletRequest request) {
         String context = request.getContextPath();
@@ -59,6 +59,8 @@ public class SecurityFilter implements HttpFilter {
 
         request.setCharacterEncoding("UTF-8");
 
+        String requestURI = request.getRequestURI();
+
         //Set default locale
         if (!session.hasLocale())
             session.setLocale(Locale.getDefault());
@@ -67,7 +69,7 @@ public class SecurityFilter implements HttpFilter {
         boolean assertsEnabled = false;
         assert assertsEnabled = true;
         if (assertsEnabled && !session.hasUser()) {
-            Optional<User> user = userDao.getById(TEST_USER_ID);
+            Optional<User> user = userDao.getUserById(TEST_USER_ID);
             if (user.isPresent()) {
                 User sessionUser = user.get();
                 log.info(String.format("Login skipped in test mode. User \"%s\" logged without authorisation", sessionUser.getEmail()));

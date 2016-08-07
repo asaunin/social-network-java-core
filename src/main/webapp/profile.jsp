@@ -10,39 +10,62 @@
         </div>
         <table class="table table-hover">
             <tr>
-                <td class="col-md-4">First name:<td>
-                <td class="col-md-8">${profile.first_name}<td>
-            </td>
-            <tr>
-                <td class="col-md-4">Last name:<td>
-                <td class="col-md-8">${profile.last_name}<td>
-            </td>
-            <tr>
-                <td class="col-md-4">Email:<td>
+                <td class="col-md-4">
+                    First name:
+                </td>
                 <td class="col-md-8">
-                    <c:if test ="${profile.isfriendofuser || profile eq user}">
+                    ${profile.first_name}
+                </td>
+            <tr>
+                <td class="col-md-4">
+                    Last name:
+                </td>
+                <td class="col-md-8">
+                    ${profile.last_name}
+                </td>
+            <tr>
+                <td class="col-md-4">
+                    Email:
+                </td>
+                <td class="col-md-8">
+                    <c:if test="${profile.isfriendofuser || profile eq user}">
                         ${profile.email}
                     </c:if>
-                <td>
-            </td>
+                </td>
             <tr>
-                <td class="col-md-4">Sex:<td>
+            <tr>
+                <td class="col-md-4">
+                    Phone:
+                </td>
+                <td class="col-md-8">
+                    <c:if test="${profile.isfriendofuser || profile eq user}">
+                        ${profile.phone}
+                    </c:if>
+                </td>
+            <tr>
+                <td class="col-md-4">
+                    Sex:
+                </td>
                 <td class="col-md-8">
                     <c:choose>
                         <c:when test="${profile.sex==1}">Male</c:when>
                         <c:when test="${profile.sex==2}">Female</c:when>
                         <c:otherwise>Unknown</c:otherwise>
                     </c:choose>
-                <td>
-            </td>
+                </td>
             <tr>
-                <td class="col-md-4">Date of birth:<td>
-                <td class="col-md-8">${profile.birth_date}<td>
-            </td>
+                <td class="col-md-4">
+                    Date of birth:
+                </td>
+                <td class="col-md-8"><fmt:formatDate value="${profile.birth_date}" pattern="dd.MM.yyyy"/>
+                </td>
             <tr>
-                <td class="col-md-4">Registered at:<td>
-                <td class="col-md-8">${profile.reg_date.toLocalDateTime().toLocalDate()}<td>
-            </td>
+                <td class="col-md-4">
+                    Registered at:
+                </td>
+                <td class="col-md-8"><fmt:formatDate value="${profile.reg_date}"
+                                                     pattern="dd.MM.yyyy"/>
+                </td>
         </table>
     </div>
 </div>

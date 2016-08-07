@@ -10,24 +10,30 @@ public abstract class Validator {
 
     public static final String RB_NAME = "locale";
 
-    public enum ErrorMessage {
+    public enum ValidationCode {
+        DUPLICATED_REGISTRATION("local.error.duplicatedregistration"),
         EMAIL_NOT_VALID("local.error.emailnotvalid"),
         NAME_NOT_VALID("local.error.namenotvalid"),
-        USER_NOT_FOUND("local.error.usernotfound"),
         PASS_NOT_VALID("local.error.passwordnotvalid"),
+        PASS_NOT_CHANGED("local.error.passwordnotchanded"),
         PASS_INCORRECT("local.error.passwordincorrect"),
         PASS_DIFFERS("local.error.passwordsdiffers"),
         REGISTRATION("local.error.registration"),
-        DUPLICATED_REGISTRATION("local.error.duplicatedregistration");
+        USER_NOT_FOUND("local.error.usernotfound"),
+
+        LOGIN_SUCCESS("local.error.locinsuccess"),
+        REGISTRATION_SUCCESS("local.error.locinsuccess"),
+        CONTACT_CHANGED_SUCCESS("local.error.contactchangedsuccess"),
+        PASS_CHANGED_SUCCESS("local.error.passwordchangedsuccess");
 
         @Getter
         private String propertyName;
 
-        ErrorMessage(String propertyName) {
+        ValidationCode(String propertyName) {
             this.propertyName = propertyName;
         }
 
-        private static String getMessage(ErrorMessage enumMessage, Locale locale) {
+        private static String getMessage(ValidationCode enumMessage, Locale locale) {
             final ResourceBundle resourceBundle = ResourceBundle.getBundle(RB_NAME, locale);
             final String key = enumMessage.getPropertyName();
             if (resourceBundle.containsKey(key))
@@ -38,32 +44,54 @@ public abstract class Validator {
 
     }
 
-    public static String getMessage(ErrorMessage enumMessage, Locale locale) {
-        return ErrorMessage.getMessage(enumMessage, locale);
+    public static String getMessage(ValidationCode enumMessage, Locale locale) {
+        return ValidationCode.getMessage(enumMessage, locale);
     }
 
-    public static String validateLogin(String email, String password, Locale locale) {
+    public static ValidationCode validateLogin(String email, String password) {
         if (!isValidEmail(email))
-            return ErrorMessage.getMessage(ErrorMessage.EMAIL_NOT_VALID, locale);
+            return ValidationCode.EMAIL_NOT_VALID;
         else if (!isValidPassword(password))
-            return ErrorMessage.getMessage(ErrorMessage.PASS_NOT_VALID, locale);
+            return ValidationCode.PASS_NOT_VALID;
         else
-            return "";
+            return ValidationCode.LOGIN_SUCCESS;
     }
 
-    public static String validateRegistration(String email, String password, String password_confirmation, String first_name, String last_name, Locale locale) {
+    public static ValidationCode validateContact(String email, String first_name, String last_name) {
         if (!isValidEmail(email))
-            return ErrorMessage.getMessage(ErrorMessage.EMAIL_NOT_VALID, locale);
+            return ValidationCode.EMAIL_NOT_VALID;
         else if (!isValidFirstName(first_name))
-            return ErrorMessage.getMessage(ErrorMessage.NAME_NOT_VALID, locale);
+            return ValidationCode.NAME_NOT_VALID;
         else if (!isValidLastName(last_name))
-            return ErrorMessage.getMessage(ErrorMessage.NAME_NOT_VALID, locale);
-        else if (!isValidPassword(password))
-            return ErrorMessage.getMessage(ErrorMessage.PASS_NOT_VALID, locale);
-        else if (!isValidPassword(password, password_confirmation))
-            return ErrorMessage.getMessage(ErrorMessage.PASS_DIFFERS, locale);
+            return ValidationCode.NAME_NOT_VALID;
         else
-            return "";
+            return ValidationCode.CONTACT_CHANGED_SUCCESS;
+    }
+
+    public static ValidationCode validateRegistration(String email, String password, String confirm_password, String first_name, String last_name) {
+        if (!isValidEmail(email))
+            return ValidationCode.EMAIL_NOT_VALID;
+        else if (!isValidFirstName(first_name))
+            return ValidationCode.NAME_NOT_VALID;
+        else if (!isValidLastName(last_name))
+            return ValidationCode.NAME_NOT_VALID;
+        else if (!isValidPassword(password))
+            return ValidationCode.PASS_NOT_VALID;
+        else if (!isValidPassword(password, confirm_password))
+            return ValidationCode.PASS_DIFFERS;
+        else
+            return ValidationCode.REGISTRATION_SUCCESS;
+    }
+
+    public static ValidationCode validatePasswordChange(String old_password, String password, String confirm_password, Locale locale) {
+        if (old_password.equals(password))
+            return (ValidationCode.PASS_NOT_CHANGED);
+        else if (!isValidPassword(password))
+            return ValidationCode.PASS_NOT_VALID;
+        else if (!isValidPassword(password, confirm_password))
+            return ValidationCode.PASS_DIFFERS;
+        else
+            return ValidationCode.PASS_CHANGED_SUCCESS;
     }
 
     public static boolean isValidEmail(String email) {
@@ -74,8 +102,8 @@ public abstract class Validator {
         return (password != null && !password.isEmpty());
     }
 
-    public static boolean isValidPassword(String password, String password_confirmation) {
-        return (password != null && !password.isEmpty() && password.equals(password_confirmation));
+    public static boolean isValidPassword(String password, String confirm_password) {
+        return (password != null && !password.isEmpty() && password.equals(confirm_password));
     }
 
     public static boolean isValidFirstName(String firstName) {
@@ -83,8 +111,14 @@ public abstract class Validator {
     }
 
     public static boolean isValidLastName(String lastName) {
-        return (lastName != null && lastName.matches( "[A-ZА-ЯЁ][a-zа-яё]+"));
+        return (lastName != null && lastName.matches("[A-ZА-ЯЁ][a-zа-яё]+"));
     }
 
+    public static boolean isValidCode(ValidationCode code) {
+        return code == ValidationCode.LOGIN_SUCCESS
+                || code == ValidationCode.REGISTRATION_SUCCESS
+                || code == ValidationCode.CONTACT_CHANGED_SUCCESS
+                || code == ValidationCode.PASS_CHANGED_SUCCESS;
+    }
 }
 

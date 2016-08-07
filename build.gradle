@@ -16,7 +16,7 @@ dependencies {
     compile 'log4j:log4j:+'
     compile 'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+'
     compile 'org.glassfish.web:javax.servlet.jsp.jstl:+'
-    compile 'org.webjars:bootstrap:+'
+//    compile 'org.webjars:bootstrap:+'
     compile 'commons-validator:commons-validator:+'
 
 
@@ -38,14 +38,14 @@ dependencies {
 //    compile 'javax.security.auth.message:javax.security.auth.message-api:+'
 //    compile 'org.apache.tomcat:tomcat-dbcp:+'
 
-}
 
-jar {
-    manifest {
-        attributes(
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'service.Loader'
-        )
-    }
+
+//jar {
+//    manifest {
+//        attributes(
+//                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+//                'Main-Class': 'service.Loader'
+//        )
+//    }
 }
 
