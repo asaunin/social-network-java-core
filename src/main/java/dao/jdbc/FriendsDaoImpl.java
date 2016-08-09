@@ -65,6 +65,7 @@ public interface FriendsDaoImpl extends FriendsDao {
         return bean.get().getId();
 
     }
+
     @Override
     default List<User> getFriendList(User currentUser, int recordsPerPage, int offset, String searchText) {
 

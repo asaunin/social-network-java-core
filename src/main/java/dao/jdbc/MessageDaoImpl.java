@@ -1,5 +1,6 @@
 package dao.jdbc;
 
+import common.Private;
 import dao.beans.MessageBean;
 import dao.interfaces.MessageDao;
 import model.Message;
@@ -13,6 +14,8 @@ public interface MessageDaoImpl extends MessageDao {
 
     String SQL_ADD_NEW =
             "INSERT INTO messages (sender, recipient, body) VALUES (?, ?, ?);";
+    String SQL_REMOVE_USER_MESSAGES =
+            "DELETE FROM messages WHERE (sender = ? OR recipient = ?);";
     String SQL_GET_BY_USER =
             "SELECT id, date, sender, recipient, body FROM messages WHERE ((sender = ? and recipient = ?) or (sender = ? and recipient = ?)) ORDER BY date;";
     String SQL_GET_LAST =
@@ -30,6 +33,12 @@ public interface MessageDaoImpl extends MessageDao {
     @Override
     default void addNew(User sender, User recipient, String text) {
         insert(MessageBean.class, SQL_ADD_NEW, sender.getId(), recipient.getId(), text);
+    }
+
+    @Private //Only for tests
+    @Override
+    default void removeUser(User user) {
+        delete(SQL_REMOVE_USER_MESSAGES, user.getId(), user.getId());
     }
 
     @Override

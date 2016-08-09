@@ -83,7 +83,7 @@ public abstract class Validator {
             return ValidationCode.REGISTRATION_SUCCESS;
     }
 
-    public static ValidationCode validatePasswordChange(String old_password, String password, String confirm_password, Locale locale) {
+    public static ValidationCode validatePasswordChange(String old_password, String password, String confirm_password) {
         if (old_password.equals(password))
             return (ValidationCode.PASS_NOT_CHANGED);
         else if (!isValidPassword(password))

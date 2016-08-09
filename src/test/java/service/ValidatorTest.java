@@ -85,14 +85,35 @@ public class ValidatorTest {
 
     @Test
     public void validatePasswordChangeTest() throws Exception {
-        assertThat(validatePasswordChange(VALID_PASSWORD, VALID_PASSWORD, VALID_PASSWORD, locale),
+        assertThat(validatePasswordChange(VALID_PASSWORD, VALID_PASSWORD, VALID_PASSWORD),
                 is(ValidationCode.PASS_NOT_CHANGED));
-        assertThat(validatePasswordChange(VALID_PASSWORD, INVALID_PASSWORD, VALID_PASSWORD, locale),
+        assertThat(validatePasswordChange(VALID_PASSWORD, INVALID_PASSWORD, VALID_PASSWORD),
                 is(ValidationCode.PASS_NOT_VALID));
-        assertThat(validatePasswordChange(ANOTHER_VALID_PASSWORD, VALID_PASSWORD, ANOTHER_VALID_PASSWORD, locale),
+        assertThat(validatePasswordChange(ANOTHER_VALID_PASSWORD, VALID_PASSWORD, ANOTHER_VALID_PASSWORD),
                 is(ValidationCode.PASS_DIFFERS));
-        assertThat(validatePasswordChange(VALID_PASSWORD, ANOTHER_VALID_PASSWORD, ANOTHER_VALID_PASSWORD, locale),
+        assertThat(validatePasswordChange(VALID_PASSWORD, ANOTHER_VALID_PASSWORD, ANOTHER_VALID_PASSWORD),
                 is(ValidationCode.PASS_CHANGED_SUCCESS));
 
     }
+
+    @Test
+    public void validateContactTest() throws Exception {
+        assertThat(validateContact(VALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.CONTACT_CHANGED_SUCCESS));
+        assertThat(validateContact(INVALID_EMAIL, VALID_FIRST_NAME, VALID_LAST_NAME),
+                is(ValidationCode.EMAIL_NOT_VALID));
+        assertThat(validateContact(VALID_EMAIL, INVALID_NAME, VALID_LAST_NAME),
+                is(ValidationCode.NAME_NOT_VALID));
+        assertThat(validateContact(VALID_EMAIL, VALID_LAST_NAME, INVALID_NAME),
+                is(ValidationCode.NAME_NOT_VALID));
+    }
+    @Test
+    public void isValidCodeTest() throws Exception {
+        assertThat(isValidCode(ValidationCode.LOGIN_SUCCESS), is(true));
+        assertThat(isValidCode(ValidationCode.REGISTRATION_SUCCESS), is(true));
+        assertThat(isValidCode(ValidationCode.CONTACT_CHANGED_SUCCESS), is(true));
+        assertThat(isValidCode(ValidationCode.PASS_CHANGED_SUCCESS), is(true));
+        assertThat(isValidCode(ValidationCode.PASS_DIFFERS), is(false));
+    }
+
 }

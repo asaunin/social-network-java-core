@@ -20,10 +20,6 @@ import static service.Validator.*;
 @WebServlet("/login")
 public class Login extends HttpServlet {
 
-    // TODO: 06.07.2016 Подключить логгер
-    // TODO: 14.07.2016 Развертка приложения
-    // TODO: 14.07.2016 Тестирование под нагрузкой Curla
-
     private UserDao userDao;
 
     @Override

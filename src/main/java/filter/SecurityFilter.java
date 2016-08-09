@@ -74,7 +74,7 @@ public class SecurityFilter implements HttpFilter {
                 User sessionUser = user.get();
                 log.info(String.format("Login skipped in test mode. User \"%s\" logged without authorisation", sessionUser.getEmail()));
                 session.setUser(sessionUser);
-//                response.sendRedirect("/profile?id=" + sessionUser.getId()); // TODO: 21.07.2016 Doesn't work because of multiple session initialisation
+//                response.sendRedirect("/profile?id=" + sessionUser.getId()); // FIXME: 21.07.2016 Doesn't work because of idea multiple session initialisation
 //                return;
             }
         }

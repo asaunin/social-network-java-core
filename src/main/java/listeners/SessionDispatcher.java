@@ -292,7 +292,7 @@ public class SessionDispatcher extends HttpServlet {
         }
 
         //Check if data not changed
-        if (user.equals(session.getUser())) { // TODO: 07.08.2016 Почему-то не работает 
+        if (user.equals(session.getUser())) {
             request.getRequestDispatcher("/main.jsp").forward(request, response);
             return;
         }
@@ -327,7 +327,7 @@ public class SessionDispatcher extends HttpServlet {
         final String confirm_password = request.getParameter("confirm_password");
 
         //Validate input parameters
-        ValidationCode validationCode = validatePasswordChange(old_password, password, confirm_password, session.getLocale());
+        ValidationCode validationCode = validatePasswordChange(old_password, password, confirm_password);
 
         //Check if old password is correct
         if (Validator.isValidCode(validationCode)) {

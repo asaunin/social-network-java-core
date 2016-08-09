@@ -1,5 +1,6 @@
 package dao.jdbc;
 
+import common.Private;
 import dao.beans.LongBean;
 import dao.interfaces.UserDao;
 import model.User;
@@ -130,8 +131,12 @@ public interface UserDaoImpl extends UserDao {
         return insert(User.class, SQL_ADD_USER, email, password, first_name, last_name);
     }
 
+    @Private //Only for tests
     @Override
     default void removeUser(User user) {
+        /* FIXME: 07.08.2016    Add removeFriends & removeMessages procedures, otherwise remove may fail is user has friends or messages
+                                Temporary removeUser is marked as Private
+        */
         delete(SQL_REMOVE_USER, user.getId());
     }
 

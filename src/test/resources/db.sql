@@ -1,1 +1,1 @@
-TRUNCATE TABLE users, messages, friends CASCADE;
+TRUNCATE TABLE messages, friends, users CASCADE;

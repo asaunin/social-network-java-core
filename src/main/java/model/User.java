@@ -50,4 +50,9 @@ public class User implements Serializable, Cloneable {
         this.name = this.first_name + " " + this.last_name;
     }
 
+    public void setBirth_date(Date birth_date) {
+        if (birth_date!=null)
+            this.birth_date = Date.valueOf(birth_date.toLocalDate().atStartOfDay().toLocalDate());
+    }
+
 }
