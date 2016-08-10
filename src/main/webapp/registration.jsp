@@ -33,7 +33,7 @@
                     <strong>Please sign up for BenchMates</strong>
                 </div>
                 <div class="panel-body">
-                    <form role="form" action="/register" method="post" autocomplete="off">
+                    <form role="form" action="/registration" method="post" autocomplete="off">
                         <div class="form-group">
                             <input type="email" name="email" id="email" class="form-control" placeholder="E-Mail" required maxlength="255" value='${param.email}'>
                         </div>

@@ -17,7 +17,7 @@ import java.util.Optional;
 import static service.Validator.*;
 
 @Log4j
-@WebServlet("/register")
+@WebServlet("/registration")
 public class Registration extends HttpServlet {
 
     private UserDao userDao;
