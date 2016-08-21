@@ -69,6 +69,7 @@
         <url-pattern>*.gif</url-pattern>
         <url-pattern>*.png</url-pattern>
         <url-pattern>*.ttf</url-pattern>
+        <url-pattern>*.eot</url-pattern>
         <url-pattern>*.woff</url-pattern>
         <url-pattern>*.woff2</url-pattern>
     </servlet-mapping>

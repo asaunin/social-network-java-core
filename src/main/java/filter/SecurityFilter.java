@@ -27,7 +27,7 @@ public class SecurityFilter implements HttpFilter {
                                     "/logout",
                                     "/registration"};
 
-    private final String[] extensions = {".ico, .ttf, .woff, .woff2, .svg"};
+    private final String[] extensions = {".ico", ".ttf", ".woff", ".woff2", ".svg", ".eot", ".png"};
 
     private boolean isAllowedUri(HttpServletRequest request) {
         String context = request.getContextPath();
