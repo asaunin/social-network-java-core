@@ -107,6 +107,7 @@ public class ValidatorTest {
         assertThat(validateContact(VALID_EMAIL, VALID_LAST_NAME, INVALID_NAME),
                 is(ValidationCode.NAME_NOT_VALID));
     }
+
     @Test
     public void isValidCodeTest() throws Exception {
         assertThat(isValidCode(ValidationCode.LOGIN_SUCCESS), is(true));
