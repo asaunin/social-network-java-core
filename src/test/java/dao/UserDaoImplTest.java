@@ -138,7 +138,7 @@ public class UserDaoImplTest {
 
         list = userDao.getUserList(new User(), 10, 0, "");
         assertThat(list.size(), is(1));
-        assertThat(list.get(0).equals(testUser), is(true));
+        assertThat(list.get(0).equals(testUser), is(true)); // TODO: 18.08.2016 Переделать на hamcrest matcher по работе с коллекциями hasItem  
 
         list = userDao.getUserList(new User(), 10, 0, "John");
         assertThat(list.size(), is(1));
