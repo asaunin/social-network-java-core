@@ -134,9 +134,6 @@ public interface UserDaoImpl extends UserDao {
     @Private //Only for tests
     @Override
     default void removeUser(User user) {
-        /* FIXME: 07.08.2016    Add removeFriends & removeMessages procedures, otherwise remove may fail is user has friends or messages
-                                Temporary removeUser is marked as Private
-        */
         delete(SQL_REMOVE_USER, user.getId());
     }
 

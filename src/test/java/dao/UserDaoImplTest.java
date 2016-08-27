@@ -19,6 +19,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 
 public class UserDaoImplTest {
@@ -138,7 +139,7 @@ public class UserDaoImplTest {
 
         list = userDao.getUserList(new User(), 10, 0, "");
         assertThat(list.size(), is(1));
-        assertThat(list.get(0).equals(testUser), is(true)); // TODO: 18.08.2016 Переделать на hamcrest matcher по работе с коллекциями hasItem  
+        assertThat(list, hasItem(testUser));
 
         list = userDao.getUserList(new User(), 10, 0, "John");
         assertThat(list.size(), is(1));

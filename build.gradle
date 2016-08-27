@@ -16,10 +16,7 @@ dependencies {
     compile 'log4j:log4j:+'
     compile 'javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:+'
     compile 'org.glassfish.web:javax.servlet.jsp.jstl:+'
-//    compile 'org.webjars:bootstrap:+'
     compile 'commons-validator:commons-validator:+'
-
-
     compile 'commons-dbutils:commons-dbutils:+'
 
     compileOnly 'org.projectlombok:lombok:+'
@@ -33,19 +30,11 @@ dependencies {
     compile 'org.apache.tomcat:juli:+'
     compile 'postgresql:postgresql:+'
 
+    //Unit tests
     testCompile 'junit:junit:+'
+    testCompile 'org.hamcrest:hamcrest-core:+'
+//    testCompile 'org.hamcrest:hamcrest-library:+'
+    testCompile 'org.mockito:mockito-core:+'
 
-//    compile 'javax.security.auth.message:javax.security.auth.message-api:+'
-//    compile 'org.apache.tomcat:tomcat-dbcp:+'
-
-
-
-//jar {
-//    manifest {
-//        attributes(
-//                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-//                'Main-Class': 'service.Loader'
-//        )
-//    }
 }
 
