@@ -1,22 +1,15 @@
 package dao;
 
-import dao.interfaces.Dao;
 import dao.jdbc.UserDaoImpl;
 import model.User;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
@@ -48,28 +41,8 @@ public class UserDaoImplTest {
     @BeforeClass
     public static void initialiseDb() throws Exception {
 
-        PoolProperties poolProp = new PoolProperties();
-        Properties prop = new Properties();
-
-        InputStream resourceAsStream =
-                Files.newInputStream(
-                        Paths.get(RESOURCES_FILE_PATH, DB_PROPERTIES_FILE_NAME));
-        prop.load(resourceAsStream);
-        poolProp.setDriverClassName(prop.getProperty("driverClassName"));
-        poolProp.setUrl(prop.getProperty("url"));
-        poolProp.setUsername(prop.getProperty("user"));
-        poolProp.setPassword(prop.getProperty("password"));
-        ds = new DataSource(poolProp);
-        ds.setPoolProperties(poolProp);
-        String[] sqls =
-                Files.lines(
-                        Paths.get(RESOURCES_FILE_PATH, DB_SCHEMA_FILE_NAME))
-                        .collect(Collectors.joining())
-                        .split(";");
+        ds = DataBase.init();
         userDao = ds::getConnection;
-
-        Dao conn = ds::getConnection;
-        conn.batch(sqls);
 
     }
 
@@ -87,8 +60,8 @@ public class UserDaoImplTest {
         assertThat(userDao.getNumberOfUsers(0L), is(0L));
         final Optional<User> user = userDao.addUser(USER_EMAIL, USER_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME);
         assertThat(user.isPresent(), is(true));
-        testUser = user.get();
         assertThat(userDao.getNumberOfUsers(0L), is(1L));
+        testUser = user.orElseGet(User::new);
     }
 
     /**
@@ -113,28 +86,28 @@ public class UserDaoImplTest {
     public void getByIdTest() {
         final Optional<User> userById = userDao.getUserById(testUser.getId());
         assertThat(userById.isPresent(), is(true));
-        assertThat(userById.get().equals(testUser), is(true));
-        assertThat(userById.get().getName(), is(USER_FIRST_NAME + " " + USER_LAST_NAME));
+        assertThat(userById.orElseGet(User::new).equals(testUser), is(true));
+        assertThat(userById.orElseGet(User::new).getName(), is(USER_FIRST_NAME + " " + USER_LAST_NAME));
     }
 
     @Test
     public void getByEmailTest() {
         final Optional<User> userById = userDao.getUserByEmail(USER_EMAIL);
         assertThat(userById.isPresent(), is(true));
-        assertThat(userById.get().equals(testUser), is(true));
+        assertThat(userById.orElseGet(User::new).equals(testUser), is(true));
     }
 
     @Test
     public void getByEmailPasswordTest() {
         final Optional<User> userByEmailPassword = userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD);
         assertThat(userByEmailPassword.isPresent(), is(true));
-        assertThat(userByEmailPassword.get().equals(testUser), is(true));
+        assertThat(userByEmailPassword.orElseGet(User::new).equals(testUser), is(true));
     }
 
     @Test
     public void getListTest() {
 
-        List<User> list = userDao.getUserList(testUser, 10, 0, "");
+        Collection<User> list = userDao.getUserList(testUser, 10, 0, "");
         assertThat(list.size(), is(0));
 
         list = userDao.getUserList(new User(), 10, 0, "");
@@ -153,10 +126,10 @@ public class UserDaoImplTest {
     public void changePasswordTest() {
 
         userDao.changePassword(testUser, USER_PASSWORD.toUpperCase());
-        assertThat(userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD.toUpperCase()).get().getId(), is(testUser.getId()));
+        assertThat(userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD.toUpperCase()).orElseGet(User::new).getId(), is(testUser.getId()));
 
         userDao.changePassword(testUser, USER_PASSWORD);
-        assertThat(userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD).get().getId(), is(testUser.getId()));
+        assertThat(userDao.getUserByEmailPassword(USER_EMAIL, USER_PASSWORD).orElseGet(User::new).getId(), is(testUser.getId()));
 
     }
 
@@ -172,7 +145,7 @@ public class UserDaoImplTest {
         testUser.setSex(sex);
         userDao.updateUser(testUser);
 
-        final User userById = userDao.getUserById(testUser.getId()).get();
+        final User userById = userDao.getUserById(testUser.getId()).orElseGet(User::new);
         assertThat(userById.equals(testUser), is(true));
 
 
@@ -186,7 +159,7 @@ public class UserDaoImplTest {
 
     @Test(expected = RuntimeException.class)
     public void addExistingUserTest() {
-        final Optional<User> user = userDao.addUser(USER_EMAIL, USER_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME);
+        userDao.addUser(USER_EMAIL, USER_PASSWORD, USER_FIRST_NAME, USER_LAST_NAME);
     }
 
 }

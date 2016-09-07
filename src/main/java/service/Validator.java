@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 
 public abstract class Validator {
 
-    public static final String RB_NAME = "locale";
+    private static final String RB_NAME = "locale";
 
     public enum ValidationCode {
         DUPLICATED_REGISTRATION("local.error.duplicatedregistration"),
@@ -27,7 +27,7 @@ public abstract class Validator {
         PASS_CHANGED_SUCCESS("local.error.passwordchangedsuccess");
 
         @Getter
-        private String propertyName;
+        private final String propertyName;
 
         ValidationCode(String propertyName) {
             this.propertyName = propertyName;
@@ -94,23 +94,23 @@ public abstract class Validator {
             return ValidationCode.PASS_CHANGED_SUCCESS;
     }
 
-    public static boolean isValidEmail(String email) {
+    private static boolean isValidEmail(String email) {
         return (email != null && !email.isEmpty() && EmailValidator.getInstance().isValid(email));
     }
 
-    public static boolean isValidPassword(String password) {
+    private static boolean isValidPassword(String password) {
         return (password != null && !password.isEmpty());
     }
 
-    public static boolean isValidPassword(String password, String confirm_password) {
+    private static boolean isValidPassword(String password, String confirm_password) {
         return (password != null && !password.isEmpty() && password.equals(confirm_password));
     }
 
-    public static boolean isValidFirstName(String firstName) {
+    private static boolean isValidFirstName(String firstName) {
         return (firstName != null && firstName.matches("[A-ZА-ЯЁ][a-zа-яё]+"));
     }
 
-    public static boolean isValidLastName(String lastName) {
+    private static boolean isValidLastName(String lastName) {
         return (lastName != null && lastName.matches("[A-ZА-ЯЁ][a-zа-яё]+"));
     }
 

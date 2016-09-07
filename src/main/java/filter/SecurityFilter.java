@@ -1,5 +1,6 @@
 package filter;
 
+import common.HttpFilter;
 import dao.interfaces.UserDao;
 import listeners.Initializer;
 import lombok.extern.log4j.Log4j;
@@ -50,6 +51,7 @@ public class SecurityFilter implements HttpFilter {
         userDao = (UserDao) filterConfig.getServletContext().getAttribute(Initializer.USER_DAO);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws
             IOException, ServletException {
@@ -59,14 +61,14 @@ public class SecurityFilter implements HttpFilter {
 
         request.setCharacterEncoding("UTF-8");
 
-        String requestURI = request.getRequestURI();
-
         //Set default locale
         if (!session.hasLocale())
             session.setLocale(Locale.getDefault());
 
         //Skip authorisation if assertion mode
+        @SuppressWarnings("UnusedAssignment")
         boolean assertsEnabled = false;
+        //noinspection ConstantConditions
         assert assertsEnabled = true;
         if (assertsEnabled && !session.hasUser()) {
             Optional<User> user = userDao.getUserById(TEST_USER_ID);

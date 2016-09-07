@@ -37,7 +37,7 @@ public class Registration extends HttpServlet {
         final String confirm_password = request.getParameter("confirm_password");
         final String first_name = request.getParameter("first_name");
         final String last_name = request.getParameter("last_name");
-        Optional<User> user = null;
+        Optional<User> user;
 
         //Validate input parameters
         ValidationCode validationCode = validateRegistration(email, password, confirm_password, first_name, last_name);

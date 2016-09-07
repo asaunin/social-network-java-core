@@ -5,7 +5,7 @@ import model.Message;
 import model.User;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 
 @FunctionalInterface
@@ -84,11 +84,11 @@ public interface HttpSessionWrapper extends Wrapper<HttpSession> {//, HttpSessio
         toSrc().setAttribute(CURRENT_TAB, currentTab);
     }
 
-    default void setUserList(List<User> userList) {
+    default void setUserList(Collection<User> userList) {
         toSrc().setAttribute(USER_LIST, userList);
     }
 
-    default void setmessageList(List<Message> messageList) {
+    default void setMessageList(Collection<Message> messageList) {
         toSrc().setAttribute(MESSAGE_LIST, messageList);
     }
 

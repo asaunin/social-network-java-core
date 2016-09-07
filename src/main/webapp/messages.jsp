@@ -46,7 +46,6 @@
         </div>
     </div>
 </div>
-</script>
 <script>
     var obj = $('.panel-body');
     var t = obj.val();

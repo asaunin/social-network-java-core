@@ -18,7 +18,7 @@ public class Message implements Serializable {
     private User recipient;
     private String body;
 
-    public static Message from(MessageBean messageBean, User sender, User recipient) {
+    private static Message from(MessageBean messageBean, User sender, User recipient) {
 
         Message message = new Message();
         message.id = messageBean.getId();

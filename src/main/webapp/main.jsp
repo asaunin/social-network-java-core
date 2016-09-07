@@ -120,6 +120,7 @@
 
 <script>
     <!--Need to be replaced as injections for success functions-->
+    //noinspection JSUnusedLocalSymbols
     function searchFriend(currentTab) {
         var searchText;
         if (currentTab=='friends')

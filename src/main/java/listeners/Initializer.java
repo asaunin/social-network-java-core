@@ -20,9 +20,9 @@ public class Initializer implements ServletContextListener {
     @Resource(name="jdbc/ProdDB")
     private static DataSource ds;
 
-    public static final String USER_DAO = "userDao";
-    public static final String MESSAGE_DAO = "messageDao";
-    public static final String FRIENDS_DAO = "friendsDao";
+    public final static String USER_DAO = "userDao";
+    final static String MESSAGE_DAO = "messageDao";
+    final static String FRIENDS_DAO = "friendsDao";
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {

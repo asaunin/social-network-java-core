@@ -1,28 +1,17 @@
 package dao;
 
-import dao.interfaces.Dao;
 import dao.jdbc.FriendsDaoImpl;
 import dao.jdbc.UserDaoImpl;
 import model.User;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.*;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class FriendsDaoImplTest {
-
-    private static final String RESOURCES_FILE_PATH = "src/test/resources/";
-    private static final String DB_PROPERTIES_FILE_NAME = "db.properties";
-    private static final String DB_SCHEMA_FILE_NAME = "db.sql";
 
     private static final String FIRST_USER_EMAIL = "doe@mail.ru";
     private static final String SECOND_USER_EMAIL = "snow@mail.ru";
@@ -44,27 +33,7 @@ public class FriendsDaoImplTest {
     @BeforeClass
     public static void initialiseDb() throws Exception {
 
-        PoolProperties poolProp = new PoolProperties();
-        Properties prop = new Properties();
-
-        InputStream resourceAsStream =
-                Files.newInputStream(
-                        Paths.get(RESOURCES_FILE_PATH, DB_PROPERTIES_FILE_NAME));
-        prop.load(resourceAsStream);
-        poolProp.setDriverClassName(prop.getProperty("driverClassName"));
-        poolProp.setUrl(prop.getProperty("url"));
-        poolProp.setUsername(prop.getProperty("user"));
-        poolProp.setPassword(prop.getProperty("password"));
-        ds = new DataSource(poolProp);
-        ds.setPoolProperties(poolProp);
-        String[] sqls =
-                Files.lines(
-                        Paths.get(RESOURCES_FILE_PATH, DB_SCHEMA_FILE_NAME))
-                        .collect(Collectors.joining())
-                        .split(";");
-        Dao conn = ds::getConnection;
-        conn.batch(sqls);
-
+        ds = DataBase.init();
         userDao = ds::getConnection;
         friendsDao = ds::getConnection;
 
@@ -104,7 +73,7 @@ public class FriendsDaoImplTest {
     @Test
     public void friendsTest() {
 
-        List<User> friends;
+        Collection<User> friends;
 
         //Add friend & check
         friendsDao.addFriend(firstUser, secondUser);

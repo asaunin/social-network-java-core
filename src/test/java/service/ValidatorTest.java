@@ -8,11 +8,10 @@ import java.util.Locale;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static service.Validator.*;
-import static service.Validator.ValidationCode;
+//import static service.Validator.ValidationCode;
 
 public class ValidatorTest {
 
-    private static final Locale locale = Locale.ENGLISH;
     private static final String USER_NOT_FOUND = "User not found";
     private static final String USER_NOT_FOUND_RU = "Пользователь не найден";
     private static final String VALID_EMAIL = "test@mail.ru";
@@ -25,11 +24,12 @@ public class ValidatorTest {
     private static final String INVALID_NAME = "John Doe";
 
     @Before
-    public void ValidatorTest() {
+    public void beforeValidatorTest() {
 
         //To test abstract class itself
+        @SuppressWarnings("SameReturnValue")
         class ValidatorImpl extends Validator {
-            public boolean abstractMethod() {
+            private boolean abstractMethod() {
                 return true;
             }
         }

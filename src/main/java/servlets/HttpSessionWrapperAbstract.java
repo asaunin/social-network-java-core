@@ -5,8 +5,9 @@ import model.User;
 import javax.servlet.http.HttpSession;
 import java.util.Locale;
 
+@SuppressWarnings("deprecation")
 @Deprecated
-public abstract class HttpSessionWrapperAbstract {
+abstract class HttpSessionWrapperAbstract {
 
     private static final String LOCALE_NAME = "locale";
     private static final String USER_NAME = "user";

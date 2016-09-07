@@ -29,7 +29,6 @@ public interface Dao {
     @Private
     default int[] batch(String[] sqls) {
 
-        QueryRunner run = new QueryRunner();
         int[] rows;
 
         Connection conn = null;
@@ -63,7 +62,7 @@ public interface Dao {
 
         T bean = null;
         QueryRunner run = new QueryRunner();
-        ResultSetHandler<T> rsh = new BeanHandler<T>(type);
+        ResultSetHandler<T> rsh = new BeanHandler<>(type);
 
         Connection conn = null;
         try {
@@ -84,7 +83,7 @@ public interface Dao {
 
         Collection<T> bean = null;
         QueryRunner run = new QueryRunner();
-        ResultSetHandler<List<T>> rsh = new BeanListHandler<T>(type);
+        ResultSetHandler<List<T>> rsh = new BeanListHandler<>(type);
 
         Connection conn = null;
         try {
@@ -145,7 +144,7 @@ public interface Dao {
 
         T bean = null;
         QueryRunner run = new QueryRunner();
-        ResultSetHandler<T> rsh = new BeanHandler<T>(type);
+        ResultSetHandler<T> rsh = new BeanHandler<>(type);
 
         Connection conn = null;
         try {

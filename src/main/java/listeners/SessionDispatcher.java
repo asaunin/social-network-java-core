@@ -21,7 +21,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -53,7 +53,7 @@ public class SessionDispatcher extends HttpServlet {
         ACTION_NOT_DEFINED("");
 
         @Getter
-        private String text;
+        private final String text;
 
         Action(String text) {
             this.text = text;
@@ -141,9 +141,7 @@ public class SessionDispatcher extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final HttpSessionWrapper session = from(request.getSession(false));
-        final String path = request.getServletPath();
         final Action action = Action.of(request.getParameter("action"));
-        final String errorMessage;
 
         //Check and set session profile if needed. It might be used later
         final int responseCode = setProfileIfNeeded(session, action, request.getParameter("id"));
@@ -213,20 +211,20 @@ public class SessionDispatcher extends HttpServlet {
     }
 
     private void viewConversation(HttpSessionWrapper session) {
-        List<Message> messageList = messageDao.getAll(session.getUser(), session.getProfile());
-        session.setmessageList(messageList);
+        Collection<Message> messageList = messageDao.getAll(session.getUser(), session.getProfile());
+        session.setMessageList(messageList);
     }
 
     private void viewMessages(HttpSessionWrapper session) {
-        List<Message> messageList = messageDao.getLast(session.getUser());
-        session.setmessageList(messageList);
+        Collection<Message> messageList = messageDao.getLast(session.getUser());
+        session.setMessageList(messageList);
     }
 
     private void viewUserList(HttpSessionWrapper session, boolean onlyFriends, String userPage, String searchText) {
 
         final User user = session.getUser();
         final int numberOfPages;
-        final List<User> userList;
+        final Collection<User> userList;
         final long numberOfUsers;
         if (onlyFriends)
             numberOfUsers = friendsDao.getNumberOfFriends(user, searchText);

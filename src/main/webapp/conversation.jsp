@@ -75,7 +75,6 @@
 </script>
 <script>
     var obj = $('.panel-body');
-    var t = obj.val();
     if(obj.length){
         //To put cursor at the end
         obj.focus().val(obj.val());
