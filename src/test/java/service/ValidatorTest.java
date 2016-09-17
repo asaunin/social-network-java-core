@@ -13,7 +13,7 @@ import static service.Validator.*;
 public class ValidatorTest {
 
     private static final String USER_NOT_FOUND = "User not found";
-    private static final String USER_NOT_FOUND_RU = "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ";
+    private static final String USER_NOT_FOUND_RU = "Пользователь не найден";
     private static final String VALID_EMAIL = "test@mail.ru";
     private static final String VALID_PASSWORD = "qwerty";
     private static final String ANOTHER_VALID_PASSWORD = "qwerty123";

@@ -17,10 +17,6 @@ import static org.junit.Assert.assertThat;
 
 public class UserDaoImplTest {
 
-    private static final String RESOURCES_FILE_PATH = "src/test/resources/";
-    private static final String DB_PROPERTIES_FILE_NAME = "db.properties";
-    private static final String DB_SCHEMA_FILE_NAME = "db.sql";
-
     private static final String USER_EMAIL = "john@mail.ru";
     private static final String USER_PASSWORD = "qwerty";
     private static final String USER_FIRST_NAME = "John";
@@ -40,10 +36,8 @@ public class UserDaoImplTest {
      */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-
         ds = DataBase.init();
         userDao = ds::getConnection;
-
     }
 
     @AfterClass

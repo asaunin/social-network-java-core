@@ -107,11 +107,11 @@ public abstract class Validator {
     }
 
     private static boolean isValidFirstName(String firstName) {
-        return (firstName != null && firstName.matches("[A-Z–ê-–Ø–Å][a-z–∞-—è—ë]+"));
+        return (firstName != null && firstName.matches("[A-Z¿-ﬂ®][a-z‡-ˇ∏]+"));
     }
 
     private static boolean isValidLastName(String lastName) {
-        return (lastName != null && lastName.matches("[A-Z–ê-–Ø–Å][a-z–∞-—è—ë]+"));
+        return (lastName != null && lastName.matches("[A-Z¿-ﬂ®][a-z‡-ˇ∏]+"));
     }
 
     public static boolean isValidCode(ValidationCode code) {

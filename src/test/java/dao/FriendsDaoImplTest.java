@@ -32,11 +32,9 @@ public class FriendsDaoImplTest {
      */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-
         ds = DataBase.init();
         userDao = ds::getConnection;
         friendsDao = ds::getConnection;
-
     }
 
     @AfterClass
