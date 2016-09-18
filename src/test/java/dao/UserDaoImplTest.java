@@ -2,10 +2,10 @@ package dao;
 
 import dao.jdbc.UserDaoImpl;
 import model.User;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 
-public class UserDaoImplTest {
+public class UserDaoImplTest extends DataBase {
 
     private static final String USER_EMAIL = "john@mail.ru";
     private static final String USER_PASSWORD = "qwerty";
@@ -26,7 +26,6 @@ public class UserDaoImplTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private static DataSource ds;
     private static UserDaoImpl userDao;
     private User testUser;
 
@@ -36,13 +35,13 @@ public class UserDaoImplTest {
      */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-        ds = DataBase.init();
+        DataSource ds = create();
         userDao = ds::getConnection;
     }
 
     @AfterClass
     public static void finalizeDb() throws Exception {
-        ds.close();
+        destroy();
     }
 
     /**

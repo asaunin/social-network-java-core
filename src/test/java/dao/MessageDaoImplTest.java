@@ -9,7 +9,7 @@ import org.junit.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class MessageDaoImplTest {
+public class MessageDaoImplTest extends DataBase {
 
     private static final String FIRST_USER_EMAIL = "doe@mail.ru";
     private static final String SECOND_USER_EMAIL = "snow@mail.ru";
@@ -18,7 +18,6 @@ public class MessageDaoImplTest {
     private static final String FIRST_USER_LAST_NAME = "Doe";
     private static final String SECOND_USER_LAST_NAME = "Snow";
 
-    private static DataSource ds;
     private static UserDaoImpl userDao;
     private static MessageDaoImpl messageDao;
     private User firstUser;
@@ -30,16 +29,14 @@ public class MessageDaoImplTest {
      */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-
-        ds = DataBase.init();
+        DataSource ds = create();
         userDao = ds::getConnection;
         messageDao = ds::getConnection;
-
     }
 
     @AfterClass
     public static void finalizeDb() throws Exception {
-        ds.close();
+        destroy();
     }
 
     /**

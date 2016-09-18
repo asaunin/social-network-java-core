@@ -3,45 +3,61 @@ package dao;
 import dao.interfaces.Dao;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
+import ru.yandex.qatools.embed.postgresql.PostgresExecutable;
+import ru.yandex.qatools.embed.postgresql.PostgresProcess;
+import ru.yandex.qatools.embed.postgresql.PostgresStarter;
+import ru.yandex.qatools.embed.postgresql.config.PostgresConfig;
 
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Properties;
 import java.util.stream.Collectors;
+
+import static java.lang.String.format;
 
 class DataBase {
 
-    private static final String RESOURCES_FILE_PATH = "src/test/resources/";
-    private static final String DB_PROPERTIES_FILE_NAME = "db.properties";
-    private static final String DB_SCHEMA_FILE_NAME = "db.sql";
+    private static final String DB_SCHEMA_FILE_NAME = "db-schema.sql";
 
-    static DataSource init() throws Exception {
+    private static DataSource ds;
+    private static PostgresProcess process;
 
+
+    static DataSource create() throws Exception {
+
+        // starting Postgres
+        PostgresStarter<PostgresExecutable, PostgresProcess> runtime = PostgresStarter.getDefaultInstance();
+        final PostgresConfig config = PostgresConfig.defaultWithDbName("test");
+        PostgresExecutable exec = runtime.prepare(config);
+        process = exec.start();
+
+        // connecting to a running Postgres
+        String url = format("jdbc:postgresql://%s:%s/%s",
+                config.net().host(),
+                config.net().port(),
+                config.storage().dbName()
+        );
         PoolProperties poolProp = new PoolProperties();
-        Properties prop = new Properties();
+        poolProp.setDriverClassName("org.postgresql.Driver");
+        poolProp.setUrl(url);
+        ds = new DataSource(poolProp);
 
-        InputStream resourceAsStream =
-                Files.newInputStream(
-                        Paths.get(RESOURCES_FILE_PATH, DB_PROPERTIES_FILE_NAME));
-        prop.load(resourceAsStream);
-        poolProp.setDriverClassName(prop.getProperty("driverClassName"));
-        poolProp.setUrl(prop.getProperty("url"));
-        poolProp.setUsername(prop.getProperty("user"));
-        poolProp.setPassword(prop.getProperty("password"));
-        DataSource ds = new DataSource(poolProp);
-        ds.setPoolProperties(poolProp);
+        // feeding up the database
+        Dao conn = ds::getConnection;
+
         String[] sqls =
                 Files.lines(
-                        Paths.get(RESOURCES_FILE_PATH, DB_SCHEMA_FILE_NAME))
+                        Paths.get(ClassLoader.getSystemResource(DB_SCHEMA_FILE_NAME).toURI()))
                         .collect(Collectors.joining())
                         .split(";");
-        Dao conn = ds::getConnection;
         conn.batch(sqls);
 
         return ds;
 
     }
 
+    static void destroy() throws Exception {
+        ds.close();
+        process.stop();
+    }
 
 }

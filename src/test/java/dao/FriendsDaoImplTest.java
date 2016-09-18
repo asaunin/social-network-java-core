@@ -3,15 +3,15 @@ package dao;
 import dao.jdbc.FriendsDaoImpl;
 import dao.jdbc.UserDaoImpl;
 import model.User;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.*;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
 import java.util.Collection;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class FriendsDaoImplTest {
+public class FriendsDaoImplTest extends DataBase {
 
     private static final String FIRST_USER_EMAIL = "doe@mail.ru";
     private static final String SECOND_USER_EMAIL = "snow@mail.ru";
@@ -20,7 +20,6 @@ public class FriendsDaoImplTest {
     private static final String FIRST_USER_LAST_NAME = "Doe";
     private static final String SECOND_USER_LAST_NAME = "Snow";
 
-    private static DataSource ds;
     private static UserDaoImpl userDao;
     private static FriendsDaoImpl friendsDao;
     private User firstUser;
@@ -32,14 +31,14 @@ public class FriendsDaoImplTest {
      */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-        ds = DataBase.init();
+        DataSource ds = create();
         userDao = ds::getConnection;
         friendsDao = ds::getConnection;
     }
 
     @AfterClass
     public static void finalizeDb() throws Exception {
-        ds.close();
+        destroy();
     }
 
     /**
