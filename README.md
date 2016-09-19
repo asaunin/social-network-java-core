@@ -27,5 +27,10 @@ I'd prefer to rewrite it using Spring & Hibernate, but unfortunately has no time
 - Pagination
 - Users & friends search
 - Error handler
+## Known bugs and Future prospects
+- Rewrite project using Spring & Hibernate
+- Rewrite client-side using AngularJS / React and SPA approach
+- Solve problem with multiple start of embedded PostgreSQL for each unit class
+- Provide clear logging
 ## Related links
 - [Demo](https://drive.google.com/open?id=0B2rnMGPgU6HnWTZJRi1vR182N1U) (video in russian)
