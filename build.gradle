@@ -29,11 +29,12 @@ dependencies {
     compile 'org.apache.tomcat:tomcat-jdbc:+'
     compile 'org.apache.tomcat:juli:+'
     compile 'postgresql:postgresql:+'
+    compile 'ru.yandex.qatools.embed:postgresql-embedded:1.15'
 
     //Unit tests
     testCompile 'junit:junit:+'
     testCompile 'org.hamcrest:hamcrest-core:+'
-//    testCompile 'org.hamcrest:hamcrest-library:+'
+    testCompile 'org.hamcrest:hamcrest-library:+'
     testCompile 'org.mockito:mockito-core:+'
 
 }
