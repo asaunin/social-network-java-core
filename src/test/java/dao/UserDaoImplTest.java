@@ -2,10 +2,10 @@ package dao;
 
 import dao.jdbc.UserDaoImpl;
 import model.User;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 
-public class UserDaoImplTest extends DataBase {
+public class UserDaoImplTest {
 
     private static final String USER_EMAIL = "john@mail.ru";
     private static final String USER_PASSWORD = "qwerty";
@@ -29,25 +29,17 @@ public class UserDaoImplTest extends DataBase {
     private static UserDaoImpl userDao;
     private User testUser;
 
-    /**
-     * Initializes connection pool for future tests
-     * Clears all data in test database
-     */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-        DataSource ds = create();
+        DataSource ds = TestSuite.getDataSource();
         userDao = ds::getConnection;
     }
 
     @AfterClass
     public static void finalizeDb() throws Exception {
-        destroy();
+        TestSuite.closeDataSource();
     }
 
-    /**
-     * Fills DB with initial data for user tests:
-     * Adds test user
-     */
     @Before
     public void addUserTest() {
         assertThat(userDao.getNumberOfUsers(0L), is(0L));
@@ -57,10 +49,6 @@ public class UserDaoImplTest extends DataBase {
         testUser = user.orElseGet(User::new);
     }
 
-    /**
-     * Clears initial data:
-     * Removes test user
-     */
     @After
     public void removeUserTest() {
         assertThat(userDao.getNumberOfUsers(0L), is(1L));

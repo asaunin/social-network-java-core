@@ -9,7 +9,7 @@ import org.junit.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class MessageDaoImplTest extends DataBase {
+public class MessageDaoImplTest {
 
     private static final String FIRST_USER_EMAIL = "doe@mail.ru";
     private static final String SECOND_USER_EMAIL = "snow@mail.ru";
@@ -23,26 +23,18 @@ public class MessageDaoImplTest extends DataBase {
     private User firstUser;
     private User secondUser;
 
-    /**
-     * Initializes connection pool for future tests
-     * Clears all data in test database
-     */
     @BeforeClass
     public static void initialiseDb() throws Exception {
-        DataSource ds = create();
+        DataSource ds = TestSuite.getDataSource();
         userDao = ds::getConnection;
         messageDao = ds::getConnection;
     }
 
     @AfterClass
     public static void finalizeDb() throws Exception {
-        destroy();
+        TestSuite.closeDataSource();
     }
 
-    /**
-     * Fills DB with initial data for user tests:
-     * Add test users
-     */
     @Before
     public void beforeTest() {
         assertThat(userDao.getNumberOfUsers(0L), is(0L));
@@ -51,10 +43,6 @@ public class MessageDaoImplTest extends DataBase {
         assertThat(userDao.getNumberOfUsers(0L), is(2L));
     }
 
-    /**
-     * Clears initial data:
-     * Remove test users
-     */
     @After
     public void afterTest() {
         assertThat(userDao.getNumberOfUsers(0L), is(2L));

@@ -40,8 +40,8 @@ I'd prefer to rewrite it using Spring & Hibernate, but unfortunately has no time
 
 - Rewrite project using Spring & Hibernate
 - Rewrite client-side using AngularJS / React and SPA approach
-- Solve problem with multiple start of embedded PostgreSQL for each unit class
 - Provide clear logging
+- ~~Solve problem with multiple start of embedded PostgreSQL for each unit class~~
 
 ## Related links
 
